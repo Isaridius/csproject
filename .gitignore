@@ -1,1 +1,9 @@
-myenv/
+source bin/activate
+this is the activation line
+
+first you 
+    cd kivy_venv
+then you
+    ls -l
+then you   
+    source bin/activate
