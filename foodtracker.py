@@ -13,6 +13,7 @@ from kivy.clock import mainthread
 
 import requests
 
+import cv2
 
 print(pytesseract.get_tesseract_version())
 
