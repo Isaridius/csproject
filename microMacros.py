@@ -6,51 +6,72 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.properties import StringProperty
 from kivy.properties import NumericProperty
+from kivy.lang import Builder
+from kivy.uix.popup import Popup
+
+from kivy.uix.screenmanager import ScreenManager, Screen
 
 import kivy.properties
 
+# Create both screens. Please note the root.manager.current: this is how
+# you can control the ScreenManager from kv. Each screen has by default a
+# property manager that gives you the instance of the ScreenManager used.
+
+# class DatePicker(Screen):
+#     pass
+
+class DateFoodMenu(Screen):
+    totalCalCounter = 0
+
+    def addFoodPress(self):
+        #print(self.ids, self.name)
+        cf = self.ids.calInputID.text #check field
+        #print(cf)
+        # if not cf:
+        #     popup = Popup(title='Error', content=Label(text='Fill all fields'),auto_dismiss=False)
+        #     popup.open()
+        c = int(self.ids.calInputID.text)
+        #print(str(c))
+        self.totalCalCounter = self.totalCalCounter + c
+        self.ids.calCounterID.text = f'Total Cals: {str(self.totalCalCounter)}'
+        #self.ids.calCounterID.text = 'Total Cals: ' + str(self.totalCalCounter)
+
+class WindowManager(ScreenManager):
+    pass
+class LoadScreen(Screen):
+    pass
+class Summary(Screen):
+    pass
+
+    
+mm = Builder.load_file('microMacros.kv')
+
 class microMacros(App):
+
     def build(self):
+        # self.food_list = [] #save this to .csv
+        # self.totalCals = NumericProperty(10)
+        # self.totalCalsTestStr = "TESTHERE"
+        # self.nutrients = []
+        # self.sumCalStr = StringProperty('0')
+        #sm = ScreenManager()
+        #sm.add_widget(LoadScreen(name="LoadScreen"))
 
-        self.food_list = [] #save this to .csv
-        self.totalCals = 0
-        self.nutrients = [] 
+        self.AllData = {} # load from .csv
 
-        self.sumCalStr = StringProperty('0')
+        return mm # self.app_window
+    def addFoodUpdate(self):
+        print(self)
+        self.AllData['23/02/25'] = [
+            {
+                'name': self.ids.FoodScreenID.ids.LayoutID.ids.foodInputID.text
+            },
+            
+        ]
 
-        self.app_window = BoxLayout(orientation='vertical')
-
-        self.appLogoImg = Image(source="logo.png")
-        self.app_window.add_widget(self.appLogoImg)
-
-        self.sumCalLabel = Label(text="Total Cals:" + str(self.totalCals))
-        self.app_window.add_widget(self.sumCalLabel)
-
-        self.FoodNameInput = TextInput(hint_text='Enter food name', multiline=False)
-        self.app_window.add_widget(self.FoodNameInput)
-
-        self.CalorieInput = TextInput(hint_text='Enter calories',input_filter="float")
-        self.app_window.add_widget(self.CalorieInput)
-
-        self.CarbsInput = TextInput(hint_text='Enter carbs',input_filter="float")
-        self.app_window.add_widget(self.CarbsInput)
-        
-        self.ProteinsInput = TextInput(hint_text='Enter protein amount',input_filter="float")
-        self.app_window.add_widget(self.ProteinsInput)
-
-        self.FatsInput = TextInput(hint_text='Enter fats total',input_filter="float")
-        self.app_window.add_widget(self.FatsInput)
-
-        self.AddFoodBtn = Button(text="Add Food")
-        self.AddFoodBtn.bind(on_press=self.addFoodCallback)
-        self.app_window.add_widget(self.AddFoodBtn)
-
-        return self.app_window
-
-    def addFoodCallback(self, instance):
-        self.totalCals = self.totalCals + float(self.CalorieInput.text)
-        self.sumCalLabel.text = "Total Cals: " + str(self.totalCals)
-        #do nothing
+        print("Yes")
+        print(self.AllData)
+ 
 
 if __name__ == "__main__":
     microMacros().run()

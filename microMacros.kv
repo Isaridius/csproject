@@ -1,0 +1,102 @@
+WindowManager:
+    LoadScreen:
+    Summary:
+    DateFoodMenu:
+
+<DateFoodMenu>:
+    name: "FoodScreen"
+    BoxLayout:
+        id: LayoutID
+        name: "Layout"
+        orientation: "vertical"
+        size: root.width, root.height
+        Image:
+            source: "logo.png"
+        Label:
+            text: "Select Date & Food"
+            font_size: 40
+        Label:
+            id: calCounterID
+            name: "CalCounter"
+            text: "Total Cals: " + str(root.totalCalCounter)
+        TextInput:
+            name: "FoodInput"
+            hint_text: "Enter Food Name"
+            multiline: False 
+            size: (1, 0.5)
+        TextInput:
+            id: calInputID
+            name: "CalInput"
+            hint_text: "Enter Calories"
+            input_filter: "float"
+        TextInput:
+            name: "CarbInput"
+            hint_text: "Enter Carbs"
+            input_filter: "float"
+        TextInput: 
+            name: "FatInput"
+            hint_text: "Enter Fats"
+            input_filter: "float"  
+        TextInput: 
+            name: "ProteinInput"
+            hint_text: "Enter Proteins"
+            input_filter: "float"
+        Button:
+            text: "AddFood"
+            font_size: 40
+            on_press: root.addFoodPress(), app.addFoodUpdate()
+        Button:
+            text: "Save"
+            font_size: 40
+            on_release: 
+                app.root.current = "SummaryScreen"
+                root.manager.transition.direction = "down"
+
+<LoadScreen>:
+    name: "LoadingScreen"
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+
+        Image:
+            source: "logo.png"
+
+        Label:
+            text: "Welcome to microMacro"
+            font_size: 60
+        Button:
+            text: "New"
+            font_size: 40
+            on_release:
+                app.root.current = "FoodScreen"
+        Button:
+            text: "Load"
+            font_size: 40
+            on_release: 
+                app.root.current = "SummaryScreen"
+                root.manager.transition.direction = "up"
+
+<Summary>:
+    name: "SummaryScreen"
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+
+        Image:
+            source: "logo.png"
+
+        Label:
+            text: "Summary"
+            font_size: 16
+        Button:
+            text: "Home"
+            font_size: 40
+            on_release: 
+                app.root.current = "LoadingScreen"
+                root.manager.transition.direction = "down"
+        Button:
+            text: "Calendar"
+            font_size: 14
+            on_release: 
