@@ -30,3 +30,4 @@ Notepad/Text File: Save it as kivy_commands.txt
 Sticky Note App: Mac has Stickies or use Google Keep.
 GitHub README: If this is a long-term project, put it in README.md!
 If anything breaks, send me the error message—I'll guide you through fixing it. 🚀
+:)
