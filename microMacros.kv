@@ -20,11 +20,13 @@ WindowManager:
         GridLayout:
             id: CalListGridLayout
             cols: 2
-            MDDatePicker:
-                id: calendarID
+            MDRaisedButton:
+                text: "Open Time Picker"
+                on_release: root.openDatePicker()
             Label:
                 text: "Food of the Day Goes Here"
-
+            Label:
+                text: "date selected"
         Label:
             id: calCounterID
             name: "CalCounter"

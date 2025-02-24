@@ -25,6 +25,21 @@ import kivy.properties
 
 class DateFoodMenu(Screen):
     totalCalCounter = 0
+    
+    def openDatePicker(self):
+        date_dialogue = MDDatePicker()
+        date_dialogue.bind(on_save=self.on_save, on_cancel=self.on_cancel)
+        date_dialogue.open()
+
+    #Click Ok
+    def on_save(self, instance, value, date_range):
+        #print(instance, value, date_range)
+        self.root.ids.date_label.text = str(value)
+
+
+    #Click Cancel
+    def on_cancel(self, instance, value):
+        self.root.ids.date_label.text = "You Clicked Cancel"
 
     def addFoodPress(self):
         #print(self.ids, self.name)
@@ -46,12 +61,11 @@ class LoadScreen(Screen):
 class Summary(Screen):
     pass
 
-mm = Builder.load_file('microMacros.kv') # mm = MicroMacro Screen Manager (short for sm)
 
 class microMacros(MDApp):
     def build(self):
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Blue"
+        # self.theme_cls.theme_style = "Dark"
+        # self.theme_cls.primary_palette = "Orange"
         # self.food_list = [] #save this to .csv
         # self.totalCals = NumericProperty(10)
         # self.totalCalsTestStr = "TESTHERE"
@@ -59,11 +73,14 @@ class microMacros(MDApp):
         # self.sumCalStr = StringProperty('0')
         #sm = ScreenManager()
         #sm.add_widget(LoadScreen(name="LoadScreen"))
-
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "BlueGray"
         self.AllData = {} # load from .csv
-        self.app_mm = mm
-        #return mm # self.app_window
-    
+        #self.app_mm = mm
+        return Builder.load_file('microMacros.kv')  # self.app_window
+        #Click Ok
+
+
     def addFoodUpdate(self):
         print(self)
         print(self.app_mm)
@@ -78,7 +95,6 @@ class microMacros(MDApp):
             },
             
         ]
-
         print("Yes")
         print(self.AllData)
  
