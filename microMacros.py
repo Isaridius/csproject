@@ -10,6 +10,9 @@ from kivy.properties import NumericProperty
 from kivy.lang import Builder
 from kivy.uix.popup import Popup
 from kivymd.uix.pickers import MDDatePicker
+
+from datetime import datetime
+from pprint import pprint
 #from kivymd.uix.picker import MDDatePicker
 
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -24,8 +27,10 @@ import kivy.properties
 #     pass
 
 class DateFoodMenu(Screen):
-    totalCalCounter = 0
-    
+    totalCalCounter = NumericProperty(0)
+    dfDate = datetime.today().strftime('%Y-%m-%d')
+    selectedDate = StringProperty(dfDate)
+
     def openDatePicker(self):
         date_dialogue = MDDatePicker()
         date_dialogue.bind(on_save=self.on_save, on_cancel=self.on_cancel)
@@ -34,17 +39,20 @@ class DateFoodMenu(Screen):
     #Click Ok
     def on_save(self, instance, value, date_range):
         #print(instance, value, date_range)
-        self.root.ids.date_label.text = str(value)
+        newDate = str(value)
+        self.selectedDate = newDate
+        print(newDate, self.selectedDate, type(newDate), type(self.selectedDate))
+        self.ids.dateLabelID.text = self.selectedDate
 
 
     #Click Cancel
     def on_cancel(self, instance, value):
         self.root.ids.date_label.text = "You Clicked Cancel"
 
-    def addFoodPress(self):
-        #print(self.ids, self.name)
-        cf = self.ids.calInputID.text #check field
-        #print(cf)
+    def addFoodPress(self):                         # add error checking blank fields 
+        # #print(self.ids, self.name)
+        # cf = self.ids.calInputID.text #check field
+        # print(cf)
         # if not cf:
         #     popup = Popup(title='Error', content=Label(text='Fill all fields'),auto_dismiss=False)
         #     popup.open()
@@ -52,15 +60,38 @@ class DateFoodMenu(Screen):
         #print(str(c))
         self.totalCalCounter = self.totalCalCounter + c
         self.ids.calCounterID.text = f'Total Cals: {str(self.totalCalCounter)}'
+
+        d = {
+            "name": self.ids.foodInputID.text,
+            "cals": self.ids.calInputID.text,
+            "proteins": self.ids.proteinInputID.text,
+            "fats": self.ids.fatInputID.text,
+            "carbs": self.ids.carbInputID.text
+        }
+        #print(microMacros.get_running_app().AllData)
+        if self.selectedDate in microMacros.get_running_app().AllData: # if in dict , append 
+            microMacros.get_running_app().AllData[self.selectedDate].append(d)
+        else: # if not in dict, add new key
+            microMacros.get_running_app().AllData[self.selectedDate] = [d]
+
+    def save(self):
+        f = open("saved_data.txt", "w") # a = overwrite if it odesn't exist?
+        f.write(str(microMacros.get_running_app().AllData))
+        f.close()
+
         #self.ids.calCounterID.text = 'Total Cals: ' + str(self.totalCalCounter)
 
 class WindowManager(ScreenManager):
     pass
 class LoadScreen(Screen):
-    pass
+    def loadData(self):
+        f = open("saved_data.txt", "r") # a = overwrite if it odesn't exist?
+        contents = f.read() # string
+        microMacros.get_running_app().AllData = dict(contents)
+        pprint(microMacros.get_running_app().AllData)
+
 class Summary(Screen):
     pass
-
 
 class microMacros(MDApp):
     def build(self):
@@ -83,21 +114,20 @@ class microMacros(MDApp):
 
     def addFoodUpdate(self):
         print(self)
-        print(self.app_mm)
-        print(self.app_mm.ids)
+        #print(self.app_mm)
+        #print(self.app_mm.ids)
 
-        print(self.app_mm.ids.DateFoodMenuID.ids)
-        print(self.app_mm.ids.DateFoodMenuID.ids.LayoutID.ids)
+        #print(self.app_mm.ids.DateFoodMenuID.ids)
+        #print(self.app_mm.ids.DateFoodMenuID.ids.LayoutID.ids)
 
-        self.AllData['23/02/25'] = [
-            {
-                'name': str(self.app_mm.ids.DateFoodMenuID.ids.foodInputID.text)
-            },
+        # self.AllData['23/02/25'] = [
+        #     {
+        #         'name': str(self.app_mm.ids.DateFoodMenuID.ids.foodInputID.text)
+        #     },
             
-        ]
-        print("Yes")
-        print(self.AllData)
+        # ]
+        #print("Yes")
+        pprint(self.AllData)
  
-
 if __name__ == "__main__":
     microMacros().run()

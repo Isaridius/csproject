@@ -21,12 +21,13 @@ WindowManager:
             id: CalListGridLayout
             cols: 2
             MDRaisedButton:
-                text: "Open Time Picker"
+                text: "Select Date"
                 on_release: root.openDatePicker()
             Label:
                 text: "Food of the Day Goes Here"
             Label:
-                text: "date selected"
+                id: dateLabelID
+                text: root.selectedDate
         Label:
             id: calCounterID
             name: "CalCounter"
@@ -43,14 +44,17 @@ WindowManager:
             hint_text: "Enter Calories"
             input_filter: "float"
         TextInput:
+            id: carbInputID
             name: "CarbInput"
             hint_text: "Enter Carbs"
             input_filter: "float"
         TextInput: 
+            id: fatInputID
             name: "FatInput"
             hint_text: "Enter Fats"
             input_filter: "float"  
         TextInput: 
+            id: proteinInputID
             name: "ProteinInput"
             hint_text: "Enter Proteins"
             input_filter: "float"
@@ -63,6 +67,7 @@ WindowManager:
             font_size: 40
             on_release: 
                 app.root.current = "SummaryScreen"
+                root.save()
                 root.manager.transition.direction = "down"
 
 <LoadScreen>:
@@ -87,6 +92,7 @@ WindowManager:
             text: "Load"
             font_size: 40
             on_release: 
+                root.loadData()
                 app.root.current = "SummaryScreen"
                 root.manager.transition.direction = "up"
 
