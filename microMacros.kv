@@ -17,6 +17,14 @@ WindowManager:
         Label:
             text: "Select Date & Food"
             font_size: 40
+        GridLayout:
+            id: CalListGridLayout
+            cols: 2
+            MDDatePicker:
+                id: calendarID
+            Label:
+                text: "Food of the Day Goes Here"
+
         Label:
             id: calCounterID
             name: "CalCounter"
