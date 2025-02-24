@@ -1,27 +1,10 @@
 from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.image import Image
-from kivy.uix.button import Button
-from kivy.uix.textinput import TextInput
-from kivy.properties import StringProperty
-from kivy.properties import NumericProperty
 from kivy.lang import Builder
-from kivy.uix.popup import Popup
+from kivy.uix.boxlayout import BoxLayout
 
-from kivy.uix.screenmanager import ScreenManager, Screen
-
-import kivy.properties
-
-# Create both screens. Please note the root.manager.current: this is how
-# you can control the ScreenManager from kv. Each screen has by default a
-# property manager that gives you the instance of the ScreenManager used.
-
-# class DatePicker(Screen):
-#     pass
-
-DatePickerObjectSrcString = """
+KV = """
 #:import Calendar calendar.Calendar
+
 <Day@Button>:
     datepicker: self.parent.datepicker
     color: [1,1,1,1]
@@ -29,6 +12,7 @@ DatePickerObjectSrcString = """
     disabled: True if self.text == "" else False
     on_release:
         root.datepicker.picked = [int(self.text), root.datepicker.month, root.datepicker.year]
+
 <Week@BoxLayout>:
     datepicker: root.parent
     weekdays: ["","","","","","",""]
@@ -46,6 +30,7 @@ DatePickerObjectSrcString = """
         text: str(root.weekdays[5])
     Day:
         text: str(root.weekdays[6])
+
 <WeekDays@BoxLayout>:
     Label:
         text: "Mon"
@@ -61,6 +46,7 @@ DatePickerObjectSrcString = """
         text: "Sat"
     Label:
         text: "Sun"
+
 <NavBar@BoxLayout>:
     datepicker: self.parent
     Spinner:
@@ -84,12 +70,14 @@ DatePickerObjectSrcString = """
         id: spin
         values: ["Month","Year"]
         text: "Month"
+
     Button:
         text: ">"
         on_release:
             if root.datepicker.month == 12 and spin.text == "Month": root.datepicker.year += 1
             if spin.text == "Month": root.datepicker.month = 1 if root.datepicker.month == 12 else root.datepicker.month + 1
             if spin.text == "Year": root.datepicker.year += 1
+
 <DatePicker@BoxLayout>:
     year: 2020
     month: 1
@@ -119,65 +107,10 @@ DatePickerObjectSrcString = """
 class DatePicker(BoxLayout):
     pass
 
-class DateFoodMenu(Screen):
-    totalCalCounter = 0
+Builder.load_string(KV)
 
-    def addFoodPress(self):
-        #print(self.ids, self.name)
-        cf = self.ids.calInputID.text #check field
-        #print(cf)
-        # if not cf:
-        #     popup = Popup(title='Error', content=Label(text='Fill all fields'),auto_dismiss=False)
-        #     popup.open()
-        c = int(self.ids.calInputID.text)
-        #print(str(c))
-        self.totalCalCounter = self.totalCalCounter + c
-        self.ids.calCounterID.text = f'Total Cals: {str(self.totalCalCounter)}'
-        #self.ids.calCounterID.text = 'Total Cals: ' + str(self.totalCalCounter)
-
-class WindowManager(ScreenManager):
-    pass
-class LoadScreen(Screen):
-    pass
-class Summary(Screen):
-    pass
-
-mm = Builder.load_file('microMacros.kv') # mm = MicroMacro Screen Manager (short for sm)
-dt = Builder.load_string(DatePickerObjectSrcString)
-
-class microMacros(App):
+class MyApp(App):
     def build(self):
-        # self.food_list = [] #save this to .csv
-        # self.totalCals = NumericProperty(10)
-        # self.totalCalsTestStr = "TESTHERE"
-        # self.nutrients = []
-        # self.sumCalStr = StringProperty('0')
-        #sm = ScreenManager()
-        #sm.add_widget(LoadScreen(name="LoadScreen"))
+        return DatePicker()
 
-        self.AllData = {} # load from .csv
-        self.app_mm = mm
-        return dt
-        #return mm # self.app_window
-    
-    def addFoodUpdate(self):
-        print(self)
-        print(self.app_mm)
-        print(self.app_mm.ids)
-
-        print(self.app_mm.ids.DateFoodMenuID.ids)
-        print(self.app_mm.ids.DateFoodMenuID.ids.LayoutID.ids)
-
-        self.AllData['23/02/25'] = [
-            {
-                'name': str(self.app_mm.ids.DateFoodMenuID.ids.foodInputID.text)
-            },
-            
-        ]
-
-        print("Yes")
-        print(self.AllData)
- 
-
-if __name__ == "__main__":
-    microMacros().run()
+MyApp().run()

@@ -2,8 +2,10 @@ WindowManager:
     LoadScreen:
     Summary:
     DateFoodMenu:
+        id: DateFoodMenuID
 
 <DateFoodMenu>:
+    id: DateFoodMenuID
     name: "FoodScreen"
     BoxLayout:
         id: LayoutID
@@ -20,6 +22,7 @@ WindowManager:
             name: "CalCounter"
             text: "Total Cals: " + str(root.totalCalCounter)
         TextInput:
+            id: foodInputID
             name: "FoodInput"
             hint_text: "Enter Food Name"
             multiline: False 
@@ -79,17 +82,14 @@ WindowManager:
 
 <Summary>:
     name: "SummaryScreen"
-
     BoxLayout:
         orientation: "vertical"
         size: root.width, root.height
-
         Image:
             source: "logo.png"
-
         Label:
-            text: "Summary"
-            font_size: 16
+            text: "Summary for Today"
+            font_size: 60
         Button:
             text: "Home"
             font_size: 40
@@ -98,5 +98,5 @@ WindowManager:
                 root.manager.transition.direction = "down"
         Button:
             text: "Calendar"
-            font_size: 14
+            font_size: 40
             on_release: 
