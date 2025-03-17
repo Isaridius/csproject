@@ -1,9 +1,11 @@
+# Window Manager to handle screen navigation
 WindowManager:
     LoadScreen:
-    Summary:
     DateFoodMenu:
         id: DateFoodMenuID
+    Summary:
 
+# Screen to manage food inputs and dates
 <DateFoodMenu>:
     id: DateFoodMenuID
     name: "FoodScreen"
@@ -12,26 +14,36 @@ WindowManager:
         name: "Layout"
         orientation: "vertical"
         size: root.width, root.height
+
+        # Logo at the top
         Image:
             source: "logo.png"
+
+        # Title label
         Label:
             text: "Select Date & Food"
             font_size: 40
+
+        # GridLayout for selecting the date and displaying food info
         GridLayout:
             id: CalListGridLayout
             cols: 2
             MDRaisedButton:
                 text: "Select Date"
-                on_release: root.openDatePicker()
+                on_release: root.openDatePicker()  # Open Date Picker
             Label:
                 text: "Food of the Day Goes Here"
             Label:
                 id: dateLabelID
                 text: root.selectedDate
+
+        # Label to display total calorie count
         Label:
             id: calCounterID
             name: "CalCounter"
             text: "Total Cals: " + str(root.totalCalCounter)
+
+        # Input fields for food and nutrient information
         TextInput:
             id: foodInputID
             name: "FoodInput"
@@ -42,7 +54,7 @@ WindowManager:
             id: calInputID
             name: "CalInput"
             hint_text: "Enter Calories"
-            input_filter: "float"
+            input_filter: "float"  # Restrict to numeric input
         TextInput:
             id: carbInputID
             name: "CarbInput"
@@ -58,8 +70,10 @@ WindowManager:
             name: "ProteinInput"
             hint_text: "Enter Proteins"
             input_filter: "float"
+
+        # Buttons to add food and save
         Button:
-            text: "AddFood"
+            text: "Add Food"
             font_size: 40
             on_press: root.addFoodPress(), app.addFoodUpdate()
         Button:
@@ -70,19 +84,25 @@ WindowManager:
                 root.save()
                 root.manager.transition.direction = "down"
 
+
+
+# Initial loading screen
 <LoadScreen>:
     name: "LoadingScreen"
-
     BoxLayout:
         orientation: "vertical"
         size: root.width, root.height
 
+        # Logo at the top
         Image:
             source: "logo.png"
 
+        # Welcome label
         Label:
             text: "Welcome to microMacro"
             font_size: 60
+
+        # Buttons to navigate to New or Load options
         Button:
             text: "New"
             font_size: 40
@@ -96,16 +116,23 @@ WindowManager:
                 app.root.current = "SummaryScreen"
                 root.manager.transition.direction = "up"
 
+# Summary screen to display overall data
 <Summary>:
     name: "SummaryScreen"
     BoxLayout:
         orientation: "vertical"
         size: root.width, root.height
+
+        # Logo at the top
         Image:
             source: "logo.png"
+
+        # Summary title
         Label:
             text: "Summary for Today"
             font_size: 60
+
+        # Buttons to navigate Home or to Calendar (Future implementation)
         Button:
             text: "Home"
             font_size: 40

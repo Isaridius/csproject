@@ -1,3 +1,5 @@
+#Imports libaries
+import kivy
 from kivymd.app import MDApp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
@@ -5,129 +7,247 @@ from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
-from kivy.properties import StringProperty
-from kivy.properties import NumericProperty
 from kivy.lang import Builder
-from kivy.uix.popup import Popup
 from kivymd.uix.pickers import MDDatePicker
-
 from datetime import datetime
-from pprint import pprint
-#from kivymd.uix.picker import MDDatePicker
+import json
+from kivy.uix.scrollview import ScrollView
 
-from kivy.uix.screenmanager import ScreenManager, Screen
+class microMacros(MDApp):
+    def build(self):
+        #Dark Mode
+        self.theme_cls.theme_style = "Dark"  # Enables dark mode
+        self.theme_cls.primary_palette = "Teal"  # Change primary color if needed
 
-import kivy.properties
+        self.load_food_log()  # Load food log from JSON
 
-# Create both screens. Please note the root.manager.current: this is how
-# you can control the ScreenManager from kv. Each screen has by default a
-# property manager that gives you the instance of the ScreenManager used.
+        #Initialize the counters
+        self.total_cals = 0
+        self.total_carbs = 0
+        self.total_fats = 0
+        self.total_protein = 0
 
-# class DatePicker(Screen):
-#     pass
+        #Initalize the window
+        self.window = GridLayout(cols=1, pos_hint={"center_x": 0.5, "center_y": 0.5})
+        
+        #Create Logo
+        self.window.add_widget(Image(source="logo.png"))
 
-class DateFoodMenu(Screen):
-    totalCalCounter = NumericProperty(0)
-    dfDate = datetime.today().strftime('%Y-%m-%d')
-    selectedDate = StringProperty(dfDate)
+        #Make the greeting and the updated text
+        self.greeting = Label(text="Food, cals, carbs, fats, protein?", font_size=30, color='AAAAAA')
+        #Add the greeting (It's separate)
+        self.window.add_widget(self.greeting)
 
-    def openDatePicker(self):
+        #Input Food Name
+        self.foodname = TextInput(multiline=False, hint_text="Enter food name")
+        self.window.add_widget(self.foodname)
+
+        #Input cals
+        self.cals = TextInput(multiline=False, input_filter="float", hint_text="Enter calories (kcal)")
+        self.window.add_widget(self.cals)
+
+        #Input carbs
+        self.carbs = TextInput(multiline=False, input_filter="float", hint_text="Enter carbohydrates (g)")
+        self.window.add_widget(self.carbs)
+
+        #Input fats
+        self.fats = TextInput(multiline=False, input_filter="float", hint_text="Enter fats (g)")
+        self.window.add_widget(self.fats)
+
+        #Input protein
+        self.protein = TextInput(multiline=False, input_filter="float", hint_text="Enter protein (g)")
+        self.window.add_widget(self.protein)
+
+        #Create calendar button & Redirect to Calendar function
+        self.calendar_btn = Button(text="Open Calendar")
+        self.calendar_btn.bind(on_press=self.show_date_picker)
+        self.window.add_widget(self.calendar_btn)
+
+        # Date label with today's date as default
+
+        print()
+        self.currentDate = Label(
+            text=str(datetime.today().date()),  # Automatically sets today's date
+            font_size=25,
+            color='AAAAAA'
+            )
+        self.window.add_widget(self.currentDate)
+
+        #Create log button & Redirect to LOG function
+        self.logbutton = Button(text="LOG", bold=True, background_color='00FFCE')
+        self.logbutton.bind(on_press=self.display_nutrient_tally)
+        self.window.add_widget(self.logbutton)
+
+        #Create Scrollable Food Log Display
+        self.scroll_view = ScrollView(size_hint=(1, None), size=(400, 300))
+        self.log_layout = BoxLayout(orientation="vertical", size_hint_y=None)
+        self.log_layout.bind(minimum_height=self.log_layout.setter("height"))
+        self.scroll_view.add_widget(self.log_layout)
+        self.window.add_widget(self.scroll_view)
+
+        self.update_displayed_log()  # Populate scroll view with existing data
+
+        return self.window
+
+    #Save the date
+    def on_save(self, instance, value, date_range):
+        self.currentDate.text = str(value)
+
+    #Either say canceled or just return to previous date
+    def on_cancel(self, instance, value):
+        # self.currentDate.text = "Canceled"
+        return
+
+    #The actual function for picking the date
+    def show_date_picker(self, instance):
+
         date_dialogue = MDDatePicker()
         date_dialogue.bind(on_save=self.on_save, on_cancel=self.on_cancel)
         date_dialogue.open()
 
-    #Click Ok
-    def on_save(self, instance, value, date_range):
-        #print(instance, value, date_range)
-        newDate = str(value)
-        self.selectedDate = newDate
-        print(newDate, self.selectedDate, type(newDate), type(self.selectedDate))
-        self.ids.dateLabelID.text = self.selectedDate
+    #Displaying nutrition log in the scroll wheel
+        #This is where a lot of stuff happens, and is the functionality of the LOG button
+    def display_nutrient_tally(self, instance):
+        #Try this
+        try:
+            #Convert input text to float values (default to 0 if empty)
+            cals = float(self.cals.text) if self.cals.text else 0
+            carbs = float(self.carbs.text) if self.carbs.text else 0
+            fats = float(self.fats.text) if self.fats.text else 0
+            protein = float(self.protein.text) if self.protein.text else 0
+            food_name = self.foodname.text.strip()
+
+            #Ensures food name is provided
+            if not food_name:
+                self.greeting.text = "Food name cannot be empty!"
+                return
+
+            #gets selected or default date
+            current_date = self.currentDate.text if self.currentDate.text != "Remember to put the date" else str(datetime.today().date())
+
+            #Add entry to the food log
+            if current_date not in self.food_log:
+                self.food_log[current_date] = {}
+
+            self.food_log[current_date][food_name] = {
+                "cals": cals,
+                "carbs": carbs,
+                "fats": fats,
+                "protein": protein
+            }
+
+            #Update total values
+            self.total_cals += cals
+            self.total_carbs += carbs
+            self.total_fats += fats
+            self.total_protein += protein
+
+            #Update UI with new totals in greeting text
+            self.greeting.text = f"Cals: {self.total_cals}, Carbs: {self.total_carbs}, Fats: {self.total_fats}, Protein: {self.total_protein}"
+
+            #Save log and update the display
+            self.save_food_log()
+            self.update_displayed_log()
+
+            #Clear input fields
+            self.foodname.text = ""
+            self.cals.text = ""
+            self.carbs.text = ""
+            self.fats.text = ""
+            self.protein.text = ""
+
+        except ValueError:
+            self.greeting.text = "Invalid input, enter numbers only!"
+
+    #Saves self.food_log into a JSON file
+    def save_food_log(self):
+        try:
+            with open("food_log.json", "w") as file:
+                json.dump(self.food_log, file)
+        except Exception as e:
+            print(f"Error saving food log: {e}")
+
+    #Loads food_log.json into the scroll widget
+    def load_food_log(self):
+        try:
+            with open("food_log.json", "r") as file:
+                self.food_log = json.load(file)
+
+            #Initalizes the total stuff
+            self.total_cals = 0
+            self.total_carbs = 0
+            self.total_fats = 0
+            self.total_protein = 0
+
+            #Tallies up all the food in JSON
+            for date in self.food_log:
+                for food in self.food_log[date].values():
+                    self.total_cals += food["cals"]
+                    self.total_carbs += food["carbs"]
+                    self.total_fats += food["fats"]
+                    self.total_protein += food["protein"]
+
+            #Puts in greeting text
+            self.greeting.text = f"(Cals: {self.total_cals}, Carbs: {self.total_carbs}, Fats: {self.total_fats}, Protein: {self.total_protein})"
+
+        except FileNotFoundError:
+            self.food_log = {}
+        except Exception as e:
+            print(f"Error loading food log: {e}")
+
+    #Updates displayed scroll food log in UI
+    def update_displayed_log(self):
+        """Dynamically updates the displayed food log in the UI with daily totals, double spacing, and left alignment."""
+        self.log_layout.clear_widgets()  # Clear previous data
+
+        for date, foods in sorted(self.food_log.items(), reverse=True):  # Sort dates in descending order
+            # Calculate daily totals
+            total_cals = sum(details['cals'] for details in foods.values())
+            total_carbs = sum(details['carbs'] for details in foods.values())
+            total_fats = sum(details['fats'] for details in foods.values())
+            total_protein = sum(details['protein'] for details in foods.values())
+
+            # Add the date as a header
+            date_label = Label(
+                text=f"[b]{date}[/b]",
+                markup=True,
+                size_hint_y=None,
+                height=50,  # Add extra spacing
+                halign="left"
+            )
+            self.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Empty space for padding
+            self.log_layout.add_widget(date_label)
+
+            # Add daily total summary
+            total_label = Label(
+                text=f"[b]Total:[/b] {total_cals} kcal | [b]Carbs:[/b] {total_carbs}g | [b]Fats:[/b] {total_fats}g | [b]Protein:[/b] {total_protein}g",
+                markup=True,
+                size_hint_y=None,
+                height=50,
+                halign="left"
+            )
+            self.log_layout.add_widget(total_label)
+            self.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Extra space
+
+            for food, details in foods.items():
+                # Add food name and kcal
+                food_label = Label(
+                    text=f"{food}: {details['cals']} kcal",
+                    size_hint_y=None,
+                    height=40,  # Double space
+                    halign="left"
+                )
+                self.log_layout.add_widget(food_label)
+
+                # Add macronutrient breakdown
+                nutrients_label = Label(
+                    text=f"Carbs: {details['carbs']}g  |  Fats: {details['fats']}g  |  Protein: {details['protein']}g",
+                    size_hint_y=None,
+                    height=40,  # Double space
+                    halign="left"
+                )
+                self.log_layout.add_widget(nutrients_label)
 
 
-    #Click Cancel
-    def on_cancel(self, instance, value):
-        self.root.ids.date_label.text = "You Clicked Cancel"
-
-    def addFoodPress(self):                         # add error checking blank fields 
-        # #print(self.ids, self.name)
-        # cf = self.ids.calInputID.text #check field
-        # print(cf)
-        # if not cf:
-        #     popup = Popup(title='Error', content=Label(text='Fill all fields'),auto_dismiss=False)
-        #     popup.open()
-        c = int(self.ids.calInputID.text)
-        #print(str(c))
-        self.totalCalCounter = self.totalCalCounter + c
-        self.ids.calCounterID.text = f'Total Cals: {str(self.totalCalCounter)}'
-
-        d = {
-            "name": self.ids.foodInputID.text,
-            "cals": self.ids.calInputID.text,
-            "proteins": self.ids.proteinInputID.text,
-            "fats": self.ids.fatInputID.text,
-            "carbs": self.ids.carbInputID.text
-        }
-        #print(microMacros.get_running_app().AllData)
-        if self.selectedDate in microMacros.get_running_app().AllData: # if in dict , append 
-            microMacros.get_running_app().AllData[self.selectedDate].append(d)
-        else: # if not in dict, add new key
-            microMacros.get_running_app().AllData[self.selectedDate] = [d]
-
-    def save(self):
-        f = open("saved_data.txt", "w") # a = overwrite if it odesn't exist?
-        f.write(str(microMacros.get_running_app().AllData))
-        f.close()
-
-        #self.ids.calCounterID.text = 'Total Cals: ' + str(self.totalCalCounter)
-
-class WindowManager(ScreenManager):
-    pass
-class LoadScreen(Screen):
-    def loadData(self):
-        f = open("saved_data.txt", "r") # a = overwrite if it odesn't exist?
-        contents = f.read() # string
-        microMacros.get_running_app().AllData = dict(contents)
-        pprint(microMacros.get_running_app().AllData)
-
-class Summary(Screen):
-    pass
-
-class microMacros(MDApp):
-    def build(self):
-        # self.theme_cls.theme_style = "Dark"
-        # self.theme_cls.primary_palette = "Orange"
-        # self.food_list = [] #save this to .csv
-        # self.totalCals = NumericProperty(10)
-        # self.totalCalsTestStr = "TESTHERE"
-        # self.nutrients = []
-        # self.sumCalStr = StringProperty('0')
-        #sm = ScreenManager()
-        #sm.add_widget(LoadScreen(name="LoadScreen"))
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "BlueGray"
-        self.AllData = {} # load from .csv
-        #self.app_mm = mm
-        return Builder.load_file('microMacros.kv')  # self.app_window
-        #Click Ok
-
-
-    def addFoodUpdate(self):
-        print(self)
-        #print(self.app_mm)
-        #print(self.app_mm.ids)
-
-        #print(self.app_mm.ids.DateFoodMenuID.ids)
-        #print(self.app_mm.ids.DateFoodMenuID.ids.LayoutID.ids)
-
-        # self.AllData['23/02/25'] = [
-        #     {
-        #         'name': str(self.app_mm.ids.DateFoodMenuID.ids.foodInputID.text)
-        #     },
-            
-        # ]
-        #print("Yes")
-        pprint(self.AllData)
- 
 if __name__ == "__main__":
     microMacros().run()
