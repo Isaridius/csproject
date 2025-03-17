@@ -12,6 +12,15 @@ from kivymd.uix.pickers import MDDatePicker
 from datetime import datetime
 import json
 from kivy.uix.scrollview import ScrollView
+from kivy.core.window import Window
+
+# iPhone 15 Pro Max aspect ratio (19.5:9)
+target_height = 900  # Adjust as needed
+target_width = int(target_height * (9 / 19.5))
+
+Window.size = (target_width, target_height)
+# Window.fullscreen = 'auto'
+
 
 class microMacros(MDApp):
     def build(self):
@@ -28,13 +37,23 @@ class microMacros(MDApp):
         self.total_protein = 0
 
         #Initalize the window
-        self.window = GridLayout(cols=1, pos_hint={"center_x": 0.5, "center_y": 0.5})
+        self.window = GridLayout(
+            cols=1, 
+            pos_hint={"center_x": 0.5, "center_y": 0.5}
+            )
         
         #Create Logo
-        self.window.add_widget(Image(source="logo.png"))
+        self.window.add_widget(
+            Image(source="logo.png")
+            )
 
         #Make the greeting and the updated text
-        self.greeting = Label(text="Food, cals, carbs, fats, protein?", font_size=30, color='AAAAAA')
+        self.greeting = Label(
+            text="Insert data for this session", 
+            font_size=30, 
+            color='AAAAAA'
+            )
+
         #Add the greeting (It's separate)
         self.window.add_widget(self.greeting)
 
@@ -64,8 +83,6 @@ class microMacros(MDApp):
         self.window.add_widget(self.calendar_btn)
 
         # Date label with today's date as default
-
-        print()
         self.currentDate = Label(
             text=str(datetime.today().date()),  # Automatically sets today's date
             font_size=25,
@@ -124,6 +141,17 @@ class microMacros(MDApp):
 
             #gets selected or default date
             current_date = self.currentDate.text if self.currentDate.text != "Remember to put the date" else str(datetime.today().date())
+
+            #Edits existing entry
+            if hasattr(self, "editing_food") and self.editing_food:
+                old_date, old_food_name = self.editing_food
+
+            # Delete old entry if food name changed
+            if old_food_name != food_name:
+                del self.food_log[old_date][old_food_name]
+
+            del self.editing_food  # Reset editing mode
+
 
             #Add entry to the food log
             if current_date not in self.food_log:
@@ -197,7 +225,7 @@ class microMacros(MDApp):
 
     #Updates displayed scroll food log in UI
     def update_displayed_log(self):
-        """Dynamically updates the displayed food log in the UI with daily totals, double spacing, and left alignment."""
+        #Dynamically updates the displayed food log in the UI with daily totals, double spacing, and left alignment.
         self.log_layout.clear_widgets()  # Clear previous data
 
         for date, foods in sorted(self.food_log.items(), reverse=True):  # Sort dates in descending order
@@ -249,5 +277,58 @@ class microMacros(MDApp):
                 self.log_layout.add_widget(nutrients_label)
 
 
+                edit_button = Button(
+                    text="Edit",
+                    size_hint_y=None,
+                    height=40
+                )
+                edit_button.bind(on_press=lambda instance, d=date, f=food: self.edit_food_entry(d, f))
+
+                delete_button = Button(
+                    text="Delete (be careful yo)",
+                    size_hint_y=None,
+                    height=40,
+                    background_color=(1, 0, 0, 1)  # Red button
+                )
+                delete_button.bind(on_press=lambda instance, d=date, f=food: self.delete_food_entry(d, f))
+
+                button_layout = BoxLayout(size_hint_y=None, height=40)
+                button_layout.add_widget(edit_button)
+                button_layout.add_widget(delete_button)
+
+                self.log_layout.add_widget(button_layout)
+
+    def edit_food_entry(self, date, food_name):
+    #Loads selected food entry into input fields for editing.
+        if date in self.food_log and food_name in self.food_log[date]:
+            entry = self.food_log[date][food_name]
+
+            # Prefill input fields with existing values
+            self.foodname.text = food_name
+            self.cals.text = str(entry["cals"])
+            self.carbs.text = str(entry["carbs"])
+            self.fats.text = str(entry["fats"])
+            self.protein.text = str(entry["protein"])
+            self.currentDate.text = date  # Set date to selected entry
+
+            # Temporary store the food being edited
+            self.editing_food = (date, food_name)
+
+
+    def delete_food_entry(self, date, food_name):
+        #Removes a food entry and updates the UI.
+        if date in self.food_log and food_name in self.food_log[date]:
+            del self.food_log[date][food_name]
+
+            # Remove the date entry if empty
+            if not self.food_log[date]:
+                del self.food_log[date]
+
+            self.save_food_log()
+            self.update_displayed_log()
+
+
+
+#run app
 if __name__ == "__main__":
     microMacros().run()
