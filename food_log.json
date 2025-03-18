@@ -1,10 +1,1 @@
-{
-    "2025-03-18": {
-        "Egg Sandwich": {
-            "cals": 200.0,
-            "carbs": 10.0,
-            "fats": 10.0,
-            "protein": 20.0
-        }
-    }
-}
+{"2025-03-18": {"Egg Sandwich": {"cals": 200.0, "carbs": 10.0, "fats": 10.0, "protein": 20.0}, "Gum": {"cals": 0.0, "carbs": 0.0, "fats": 0.0, "protein": 0.0}, "Salmon": {"cals": 800.0, "carbs": 0.0, "fats": 56.0, "protein": 100.0}}}

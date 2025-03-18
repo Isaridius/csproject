@@ -318,7 +318,7 @@ class microMacros(MDApp):
 
 
     def delete_food_entry(self, date, food_name):
-        #Removes a food entry and updates the UI.
+        # Removes a food entry and updates the UI.
         if date in self.food_log and food_name in self.food_log[date]:
             del self.food_log[date][food_name]
 
@@ -326,8 +326,8 @@ class microMacros(MDApp):
             if not self.food_log[date]:
                 del self.food_log[date]
 
-            self.save_food_log()
-            self.update_displayed_log()
+            self.save_food_log()  # Save the updated log
+            self.update_displayed_log()  # Update the displayed log
 
 
 #run app
