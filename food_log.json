@@ -1,1 +1,10 @@
-{"2025-03-16": {"Mark": {"cals": 0.0, "carbs": 0.0, "fats": 0.0, "protein": 0.0}}, "2025-03-17": {"Egg": {"cals": 100.0, "carbs": 13.0, "fats": 24.0, "protein": 20.0}}}
+{
+    "2025-03-18": {
+        "Egg Sandwich": {
+            "cals": 200.0,
+            "carbs": 10.0,
+            "fats": 10.0,
+            "protein": 20.0
+        }
+    }
+}

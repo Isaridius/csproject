@@ -10,7 +10,6 @@ install requirements.txt
 install Kivy
 install KivyMD
 
-
 deactivate python virtual environment
     deactivate
 

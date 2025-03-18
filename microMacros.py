@@ -146,12 +146,14 @@ class microMacros(MDApp):
             if hasattr(self, "editing_food") and self.editing_food:
                 old_date, old_food_name = self.editing_food
 
-            # Delete old entry if food name changed
-            if old_food_name != food_name:
-                del self.food_log[old_date][old_food_name]
+                # Delete old entry if food name changed
+                if old_food_name != food_name and old_date in self.food_log and old_food_name in self.food_log[old_date]:
+                    del self.food_log[old_date][old_food_name]
 
-            del self.editing_food  # Reset editing mode
-
+                # Remove editing mode safely
+                del self.editing_food
+            else:
+                old_date, old_food_name = None, None  # Avoid using uninitialized variables
 
             #Add entry to the food log
             if current_date not in self.food_log:
@@ -285,7 +287,7 @@ class microMacros(MDApp):
                 edit_button.bind(on_press=lambda instance, d=date, f=food: self.edit_food_entry(d, f))
 
                 delete_button = Button(
-                    text="Delete (be careful yo)",
+                    text="Delete (CAUTION)",
                     size_hint_y=None,
                     height=40,
                     background_color=(1, 0, 0, 1)  # Red button
@@ -326,7 +328,6 @@ class microMacros(MDApp):
 
             self.save_food_log()
             self.update_displayed_log()
-
 
 
 #run app
