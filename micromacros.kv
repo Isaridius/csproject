@@ -1,0 +1,77 @@
+
+
+
+GridLayout:
+    id: window
+    cols: 1
+    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+    Image:
+        source: "logo.png"
+
+    Label:
+        id: greeting
+        text: "Insert data for this session"
+        font_size: 30
+        color: "AAAAAA"
+
+    TextInput:
+        id: foodname
+        multiline: False
+        hint_text: "Enter food name"
+
+    TextInput:
+        id: cals
+        multiline: False
+        input_filter: "float"
+        hint_text: "Enter calories (kcal)"
+
+    TextInput:
+        id: carbs
+        multiline: False
+        input_filter: "float"
+        hint_text: "Enter carbohydrates (g)"
+
+    TextInput:
+        id: fats
+        multiline: False
+        input_filter: "float"
+        hint_text: "Enter fats (g)"
+
+    TextInput:
+        id: protein
+        multiline: False
+        input_filter: "float"
+        hint_text: "Enter protein (g)"
+
+    Button:
+        id: calendar_btn
+        text: "Open Calendar"
+        on_press: app.show_date_picker(self)
+
+    Label:
+        id: currentDate
+        text: app.today
+        font_size: 25
+        color: "AAAAAA"
+
+    Button:
+        id: logbutton
+        text: "LOG"
+        bold: True
+        background_color: "00FFCE"
+        on_press: app.display_nutrient_tally(self)
+
+    ScrollView:
+        id: scroll_view
+        size_hint: (1, None)
+        size: (400, 300)
+
+        BoxLayout:
+            id: log_layout
+            orientation: "vertical"
+            size_hint_y: None
+            height: self.minimum_height
+            text: log_layout
+
+            
