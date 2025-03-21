@@ -13,6 +13,7 @@ from datetime import datetime
 import json
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
+from kivy.uix.screenmanager import ScreenManager, Screen
 
 # iPhone 15 Pro Max aspect ratio (19.5:9)
 target_height = 900  # Adjust as needed
@@ -22,6 +23,11 @@ Window.size = (target_width, target_height)
 # Window.fullscreen = 'auto'
 
 
+class LogScreen(Screen):
+    pass
+
+class GoalsScreen(Screen):
+    pass
 
 class microMacros(MDApp):
     
@@ -41,6 +47,11 @@ class microMacros(MDApp):
         self.theme_cls.primary_palette = "Teal"
 
         self.load_food_log()  # Load saved log on startup
+
+        sm = ScreenManager()
+        sm.add_widget(LogScreen(name="logscreen"))
+        sm.add_widget(GoalsScreen(name="goalscreen"))
+
         build = Builder.load_file('microMacros.kv')
 
         # Call update_displayed_log to show today's log at startup
@@ -61,6 +72,8 @@ class microMacros(MDApp):
     #Either say canceled or just return to previous date
     def on_cancel(self, instance, value):
         # self.currentDate.text = "Canceled"
+        # self.root.ids.currentDate.text = str(self.current_date)
+        # self.update_displayed_log(self.current_date)
         return
 
     #The actual function for picking the date
@@ -357,6 +370,10 @@ class microMacros(MDApp):
 
     def on_start(self):
         self.update_displayed_log(self.current_date)
+
+
+    def change_goals(self, instance):
+        return
 
 
 
