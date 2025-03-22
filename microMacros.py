@@ -24,42 +24,6 @@ Window.size = (target_width, target_height)
 
 
 class LogScreen(Screen):
-    pass
-
-class GoalsScreen(Screen):
-    pass
-
-class microMacros(MDApp):
-    
-    food_log = json.load(open("food_log.json", "r"))
-
-    #Initialize the counters
-    total_cals = 0
-    total_carbs = 0
-    total_fats = 0
-    total_protein = 0
-
-    today = datetime.today().strftime('%Y-%m-%d')
-    current_date = str(datetime.today().date())  
-
-    def build(self):
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Teal"
-
-        self.load_food_log()  # Load saved log on startup
-
-        sm = ScreenManager()
-        sm.add_widget(LogScreen(name="logscreen"))
-        sm.add_widget(GoalsScreen(name="goalscreen"))
-
-        build = Builder.load_file('microMacros.kv')
-
-        # Call update_displayed_log to show today's log at startup
-        self.update_displayed_log(self.current_date)
-
-        return build
-        # return self.window
-
     #Save the date
     def on_save(self, instance, value, date_range):
         # Update the displayed date
@@ -338,7 +302,7 @@ class microMacros(MDApp):
                     self.root.ids.log_layout.add_widget(button_layout)
 
     def edit_food_entry(self, date, food_name):
-    #Loads selected food entry into input fields for editing.
+        #Loads selected food entry into input fields for editing.
         if date in self.food_log and food_name in self.food_log[date]:
             entry = self.food_log[date][food_name]
 
@@ -367,6 +331,46 @@ class microMacros(MDApp):
 
             # **Pass the current date to refresh the UI**
             self.update_displayed_log(date)
+
+
+
+
+class GoalsScreen(Screen):
+    pass
+
+
+
+
+class microMacros(MDApp):
+    
+    food_log = json.load(open("food_log.json", "r"))
+
+    #Initialize the counters
+    total_cals = 0
+    total_carbs = 0
+    total_fats = 0
+    total_protein = 0
+
+    today = datetime.today().strftime('%Y-%m-%d')
+    current_date = str(datetime.today().date())  
+
+    def build(self):
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Teal"
+
+        self.load_food_log()  # Load saved log on startup
+
+        sm = ScreenManager()
+        sm.add_widget(LogScreen(name="logscreen"))
+        sm.add_widget(GoalsScreen(name="goalscreen"))
+
+        build = Builder.load_file('microMacros.kv')
+
+        # Call update_displayed_log to show today's log at startup
+        self.update_displayed_log(self.current_date)
+
+        return build
+        # return self.window
 
     def on_start(self):
         self.update_displayed_log(self.current_date)

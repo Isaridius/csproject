@@ -22,7 +22,7 @@ ScreenManager:
                 text: "Goals"
                 font_size: 30
                 color: "AAAAAA"
-                on_press: app.change_goals(self)
+                on_press: app.root.current = "GoalsScreen"
 
 
         Label:
@@ -91,13 +91,17 @@ ScreenManager:
                 text: log_layout
      
 
+
+
 <GoalsScreen>:
     BoxLayout:
         orientation: "vertical"
         Label:
             text: "Set Your Goals"
+
         Button:
             text: "Back"
             on_press: app.root.current = "main"
+
 
 
