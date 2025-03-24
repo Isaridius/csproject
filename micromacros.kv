@@ -1,12 +1,10 @@
-ScreenManager:
-    id: screen_manager
-    LogScreen: 
-        name: "logscreen"
-    GoalsScreen:
-        name: "goalscreen"
+WindowManager:
+    LogScreen
+    GoalsScreen
 
 
 <LogScreen>:
+    name: "LogScreen"
     GridLayout:
         id: window
         cols: 1
@@ -19,7 +17,7 @@ ScreenManager:
                 source: "logo.png"
             Button:
                 id: change_goals"
-                text: "Goals"
+                text: "Change Goals?"
                 font_size: 30
                 color: "AAAAAA"
                 on_press: app.root.current = "GoalsScreen"
@@ -94,6 +92,7 @@ ScreenManager:
 
 
 <GoalsScreen>:
+    name: "GoalsScreen"
     BoxLayout:
         orientation: "vertical"
         Label:
@@ -101,7 +100,7 @@ ScreenManager:
 
         Button:
             text: "Back"
-            on_press: app.root.current = "main"
+            on_press: app.root.current = "LogScreen"
 
 
 

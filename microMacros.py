@@ -334,12 +334,11 @@ class LogScreen(Screen):
 
 
 
-
 class GoalsScreen(Screen):
     pass
 
-
-
+class WindowManager(ScreenManager):
+    pass
 
 class microMacros(MDApp):
     
@@ -372,12 +371,21 @@ class microMacros(MDApp):
         return build
         # return self.window
 
+
+    
+    
+    
     def on_start(self):
         self.update_displayed_log(self.current_date)
 
 
     def change_goals(self, instance):
         return
+
+
+
+
+
 
 
 

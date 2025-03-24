@@ -1,0 +1,63 @@
+WindowManager:
+    SummaryScreen
+    LogScreen
+    GoalsScreen
+
+
+<SummaryScreen>:
+    name: "SummaryScreen"
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+        Label:
+            text: "This is where you'll compare today and goals"
+            font_size: 32
+
+        Button:
+            text: "Go to Log Screen"
+            font_size: 32
+            on_release: 
+                app.root.current = "LogScreen"
+                root.manager.transition.direction = "left"
+
+        Button:
+            text: "Go to Goals Screen"
+            font_size: 32
+            on_release: 
+                app.root.current = "GoalsScreen"
+                root.manager.transition.direction = "right"
+             
+            
+
+<LogScreen>:
+    name: "LogScreen"
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+        Label:
+            text: "This is where you'll log food"
+            font_size: 32
+
+        Button:
+            text: "Go to Summary Screen"
+            font_size: 32
+            on_release: 
+                app.root.current = "SummaryScreen"
+                root.manager.transition.direction = "right"
+
+
+<GoalsScreen>:
+    name: "GoalsScreen"
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+        Label:
+            text: "This is where you'll set goals "
+            font_size: 32
+
+        Button:
+            text: "Go to Summary Screen"
+            font_size: 32
+            on_release: 
+                app.root.current = "SummaryScreen"
+                root.manager.transition.direction = "left"
