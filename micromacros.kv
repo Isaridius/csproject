@@ -3,20 +3,6 @@ WindowManager:
     LogScreen
     GoalsScreen
 
-<SummaryScreen>:
-    name: summaryscreen
-    GridLayout:
-        id: summarygrid
-        cols: 1
-        Label:
-            id: "Meow"
-            text: "Meow"
-        Button:
-            id: gotolog
-            text: "Go To Log Screen"
-            on_press: app.root.current = "LogScreen"
-
-
 
 <LogScreen>:
     name: "logscreen"

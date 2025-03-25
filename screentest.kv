@@ -3,13 +3,13 @@ WindowManager:
     LogScreen
     GoalsScreen
 
-
 <SummaryScreen>:
     name: "SummaryScreen"
     BoxLayout:
         orientation: 'vertical'
         size: root.width, root.height
         Label:
+            id: greetings
             text: "This is where you'll compare today and goals"
             font_size: 32
 
@@ -17,6 +17,19 @@ WindowManager:
             text: "This should work"
             font_size: 32
             on_release: app.change_date(self)
+
+        Button:
+            text: "Change TEXT"
+            font_size: 32
+            on_release: app.change_text(self)  # Fixed method call
+
+
+        Button:
+            text: "Change it BACK"
+            font_size: 32
+            on_release: app.change_text_two(self)  # Fixed method call
+
+
 
         Button:
             text: "Go to Log Screen"
@@ -32,8 +45,6 @@ WindowManager:
                 app.root.current = "GoalsScreen"
                 root.manager.transition.direction = "right"
              
-            
-
 <LogScreen>:
     name: "LogScreen"
     BoxLayout:
@@ -49,7 +60,6 @@ WindowManager:
             on_release: 
                 app.root.current = "SummaryScreen"
                 root.manager.transition.direction = "right"
-
 
 <GoalsScreen>:
     name: "GoalsScreen"
