@@ -1,10 +1,25 @@
 WindowManager:
+    SummaryScreen
     LogScreen
     GoalsScreen
 
+<SummaryScreen>:
+    name: summaryscreen
+    GridLayout:
+        id: summarygrid
+        cols: 1
+        Label:
+            id: "Meow"
+            text: "Meow"
+        Button:
+            id: gotolog
+            text: "Go To Log Screen"
+            on_press: app.root.current = "LogScreen"
+
+
 
 <LogScreen>:
-    name: "LogScreen"
+    name: "logscreen"
     GridLayout:
         id: window
         cols: 1
@@ -61,7 +76,7 @@ WindowManager:
         Button:
             id: calendar_btn
             text: "Open Calendar"
-            on_press: app.show_date_picker(self)
+            on_press: root.show_date_picker(self)
 
         Label:
             id: currentDate
@@ -74,7 +89,7 @@ WindowManager:
             text: "LOG"
             bold: True
             background_color: "00FFCE"
-            on_press: app.display_nutrient_tally(self)
+            on_press: root.display_nutrient_tally(self)
 
         ScrollView:
             id: scroll_view
@@ -92,7 +107,7 @@ WindowManager:
 
 
 <GoalsScreen>:
-    name: "GoalsScreen"
+    name: "goalsscreen"
     BoxLayout:
         orientation: "vertical"
         Label:

@@ -23,15 +23,19 @@ Window.size = (target_width, target_height)
 # Window.fullscreen = 'auto'
 
 
+class SummaryScreen(Screen):
+    pass
+
 class LogScreen(Screen):
     #Save the date
     def on_save(self, instance, value, date_range):
         # Update the displayed date
+        print(f"Date selected: {value}")
         print(type(value))
-        self.root.ids.currentDate.text = str(value)
+        self.ids.currentDate.text = str(value)
         
         # Filter the food log to show only the selected date
-        self.update_displayed_log(date=str(value))  # Pass the selected date to update_displayed_log
+        # self.update_displayed_log(date=str(value))  # Pass the selected date to update_displayed_log
 
     #Either say canceled or just return to previous date
     def on_cancel(self, instance, value):
@@ -42,6 +46,7 @@ class LogScreen(Screen):
 
     #The actual function for picking the date
     def show_date_picker(self, instance):
+        print("Should be opening date picker")
         date_dialogue = MDDatePicker()
         date_dialogue.bind(on_save=self.on_save, on_cancel=self.on_cancel)
         date_dialogue.open()
@@ -157,7 +162,6 @@ class LogScreen(Screen):
             self.update_displayed_log(date)
 
 
-
 class GoalsScreen(Screen):
     pass
 
@@ -184,13 +188,14 @@ class microMacros(MDApp):
         self.load_food_log()  # Load saved log on startup
 
         sm = ScreenManager()
+        sm.add_widget(SummaryScreen(name="summaryscreen"))
         sm.add_widget(LogScreen(name="logscreen"))
         sm.add_widget(GoalsScreen(name="goalscreen"))
 
         build = Builder.load_file('microMacros.kv')
 
         # Call update_displayed_log to show today's log at startup
-        self.update_displayed_log(self.current_date)
+        # self.update_displayed_log(self.current_date)
 
         return build
         # return self.window
@@ -208,7 +213,7 @@ class microMacros(MDApp):
             self.total_protein = 0
 
             #Tallies up all the food in JSON
-            for date in self.root.ids.food_log:
+            for date in self.food_log:
                 for food in self.food_log[date].values():
                     self.total_cals += food["cals"]
                     self.total_carbs += food["carbs"]
@@ -224,160 +229,164 @@ class microMacros(MDApp):
             print(f"Error loading food log: {e}")
 
 
+
+        pass
+
+
     #Updates displayed scroll food log in UI
     def update_displayed_log(self, date=None):
         print("reached")
         print(date)
         print(type(date))
-        self.root.ids.log_layout.clear_widgets()  # Clear previous data
-        print("Cleared widgets")
+        # self.root.ids.log_layout.clear_widgets()  # Clear previous data
+        # print("Cleared widgets")
 
 
-        if date:  # If a date is provided, show only that date’s 
-            print("got to IF for loop")
+        # if date:  # If a date is provided, show only that date’s 
+        #     print("got to IF for loop")
 
-            foods = self.food_log.get(date, {})
-            total_cals = sum(details['cals'] for details in foods.values())
-            total_carbs = sum(details['carbs'] for details in foods.values())
-            total_fats = sum(details['fats'] for details in foods.values())
-            total_protein = sum(details['protein'] for details in foods.values())
+        #     foods = self.food_log.get(date, {})
+        #     total_cals = sum(details['cals'] for details in foods.values())
+        #     total_carbs = sum(details['carbs'] for details in foods.values())
+        #     total_fats = sum(details['fats'] for details in foods.values())
+        #     total_protein = sum(details['protein'] for details in foods.values())
 
-            # Add the date as a header
-            print(1)
-            date_label = Label(
-                text=f"[b]{date}[/b]",
-                markup=True,
-                size_hint_y=None,
-                height=50,  # Add extra spacing
-                halign="left"
-            )
-            self.root.ids.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Empty space for padding
-            self.root.ids.log_layout.add_widget(date_label)
+        #     # Add the date as a header
+        #     print(1)
+        #     date_label = Label(
+        #         text=f"[b]{date}[/b]",
+        #         markup=True,
+        #         size_hint_y=None,
+        #         height=50,  # Add extra spacing
+        #         halign="left"
+        #     )
+        #     self.root.ids.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Empty space for padding
+        #     self.root.ids.log_layout.add_widget(date_label)
 
-            # Add daily total summary
-            print(2)
-            total_label = Label(
-                text=f"[b]Total:[/b] {total_cals} kcal | [b]Carbs:[/b] {total_carbs}g | [b]Fats:[/b] {total_fats}g | [b]Protein:[/b] {total_protein}g",
-                markup=True,
-                size_hint_y=None,
-                height=50,
-                halign="left"
-            )
-            self.root.ids.log_layout.add_widget(total_label)
-            self.root.ids.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Extra space
+        #     # Add daily total summary
+        #     print(2)
+        #     total_label = Label(
+        #         text=f"[b]Total:[/b] {total_cals} kcal | [b]Carbs:[/b] {total_carbs}g | [b]Fats:[/b] {total_fats}g | [b]Protein:[/b] {total_protein}g",
+        #         markup=True,
+        #         size_hint_y=None,
+        #         height=50,
+        #         halign="left"
+        #     )
+        #     self.root.ids.log_layout.add_widget(total_label)
+        #     self.root.ids.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Extra space
 
-            for food, details in foods.items():
-                # Add food name and kcal
-                food_label = Label(
-                    text=f"{food}: {details['cals']} kcal",
-                    size_hint_y=None,
-                    height=40,  # Double space
-                    halign="left"
-                )
-                self.root.ids.log_layout.add_widget(food_label)
+        #     for food, details in foods.items():
+        #         # Add food name and kcal
+        #         food_label = Label(
+        #             text=f"{food}: {details['cals']} kcal",
+        #             size_hint_y=None,
+        #             height=40,  # Double space
+        #             halign="left"
+        #         )
+        #         self.root.ids.log_layout.add_widget(food_label)
 
-                # Add macronutrient breakdown
-                nutrients_label = Label(
-                    text=f"Carbs: {details['carbs']}g  |  Fats: {details['fats']}g  |  Protein: {details['protein']}g",
-                    size_hint_y=None,
-                    height=40,  # Double space
-                    halign="left"
-                )
-                self.root.ids.log_layout.add_widget(nutrients_label)
+        #         # Add macronutrient breakdown
+        #         nutrients_label = Label(
+        #             text=f"Carbs: {details['carbs']}g  |  Fats: {details['fats']}g  |  Protein: {details['protein']}g",
+        #             size_hint_y=None,
+        #             height=40,  # Double space
+        #             halign="left"
+        #         )
+        #         self.root.ids.log_layout.add_widget(nutrients_label)
 
-                # Add Edit and Delete buttons
-                edit_button = Button(
-                    text="Edit",
-                    size_hint_y=None,
-                    height=40
-                )
-                edit_button.bind(on_press=lambda instance, d=date, f=food: self.edit_food_entry(d, f))
+        #         # Add Edit and Delete buttons
+        #         edit_button = Button(
+        #             text="Edit",
+        #             size_hint_y=None,
+        #             height=40
+        #         )
+        #         edit_button.bind(on_press=lambda instance, d=date, f=food: self.edit_food_entry(d, f))
 
-                delete_button = Button(
-                    text="Delete (CAUTION)",
-                    size_hint_y=None,
-                    height=40,
-                    background_color=(1, 0, 0, 1)  # Red button
-                )
-                delete_button.bind(on_press=lambda instance, d=date, f=food: self.delete_food_entry(d, f))
+        #         delete_button = Button(
+        #             text="Delete (CAUTION)",
+        #             size_hint_y=None,
+        #             height=40,
+        #             background_color=(1, 0, 0, 1)  # Red button
+        #         )
+        #         delete_button.bind(on_press=lambda instance, d=date, f=food: self.delete_food_entry(d, f))
 
-                button_layout = BoxLayout(size_hint_y=None, height=40)
-                button_layout.add_widget(edit_button)
-                button_layout.add_widget(delete_button)
+        #         button_layout = BoxLayout(size_hint_y=None, height=40)
+        #         button_layout.add_widget(edit_button)
+        #         button_layout.add_widget(delete_button)
 
-                self.root.ids.log_layout.add_widget(button_layout)
+        #         self.root.ids.log_layout.add_widget(button_layout)
 
-        else:
-            # Code for displaying all logs when no specific date is provided
-            print("Got to ELSE for loop")
-            for date, foods in sorted(self.food_log.items(), reverse=True):
-                # Add the date as a header
-                date_label = Label(
-                    text=f"[b]{date}[/b]",
-                    markup=True,
-                    size_hint_y=None,
-                    height=50,  # Add extra spacing
-                    halign="left"
-                )
-                self.root.ids.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Empty space for padding
-                self.root.ids.log_layout.add_widget(date_label)
+        # else:
+        #     # Code for displaying all logs when no specific date is provided
+        #     print("Got to ELSE for loop")
+        #     for date, foods in sorted(self.food_log.items(), reverse=True):
+        #         # Add the date as a header
+        #         date_label = Label(
+        #             text=f"[b]{date}[/b]",
+        #             markup=True,
+        #             size_hint_y=None,
+        #             height=50,  # Add extra spacing
+        #             halign="left"
+        #         )
+        #         self.root.ids.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Empty space for padding
+        #         self.root.ids.log_layout.add_widget(date_label)
 
-                # Add daily total summary for the whole log
-                total_cals = sum(details['cals'] for details in foods.values())
-                total_carbs = sum(details['carbs'] for details in foods.values())
-                total_fats = sum(details['fats'] for details in foods.values())
-                total_protein = sum(details['protein'] for details in foods.values())
+        #         # Add daily total summary for the whole log
+        #         total_cals = sum(details['cals'] for details in foods.values())
+        #         total_carbs = sum(details['carbs'] for details in foods.values())
+        #         total_fats = sum(details['fats'] for details in foods.values())
+        #         total_protein = sum(details['protein'] for details in foods.values())
 
-                total_label = Label(
-                    text=f"[b]Total:[/b] {total_cals} kcal | [b]Carbs:[/b] {total_carbs}g | [b]Fats:[/b] {total_fats}g | [b]Protein:[/b] {total_protein}g",
-                    markup=True,
-                    size_hint_y=None,
-                    height=50,
-                    halign="left"
-                )
-                self.root.ids.log_layout.add_widget(total_label)
-                self.root.ids.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Extra space
+        #         total_label = Label(
+        #             text=f"[b]Total:[/b] {total_cals} kcal | [b]Carbs:[/b] {total_carbs}g | [b]Fats:[/b] {total_fats}g | [b]Protein:[/b] {total_protein}g",
+        #             markup=True,
+        #             size_hint_y=None,
+        #             height=50,
+        #             halign="left"
+        #         )
+        #         self.root.ids.log_layout.add_widget(total_label)
+        #         self.root.ids.log_layout.add_widget(Label(size_hint_y=None, height=10))  # Extra space
 
-                for food, details in foods.items():
-                    # Add food name and kcal
-                    food_label = Label(
-                        text=f"{food}: {details['cals']} kcal",
-                        size_hint_y=None,
-                        height=40,  # Double space
-                        halign="left"
-                    )
-                    self.root.ids.log_layout.add_widget(food_label)
+        #         for food, details in foods.items():
+        #             # Add food name and kcal
+        #             food_label = Label(
+        #                 text=f"{food}: {details['cals']} kcal",
+        #                 size_hint_y=None,
+        #                 height=40,  # Double space
+        #                 halign="left"
+        #             )
+        #             self.root.ids.log_layout.add_widget(food_label)
 
-                    # Add macronutrient breakdown
-                    nutrients_label = Label(
-                        text=f"Carbs: {details['carbs']}g  |  Fats: {details['fats']}g  |  Protein: {details['protein']}g",
-                        size_hint_y=None,
-                        height=40,  # Double space
-                        halign="left"
-                    )
-                    self.root.ids.log_layout.add_widget(nutrients_label)
+        #             # Add macronutrient breakdown
+        #             nutrients_label = Label(
+        #                 text=f"Carbs: {details['carbs']}g  |  Fats: {details['fats']}g  |  Protein: {details['protein']}g",
+        #                 size_hint_y=None,
+        #                 height=40,  # Double space
+        #                 halign="left"
+        #             )
+        #             self.root.ids.log_layout.add_widget(nutrients_label)
 
-                    # Add Edit and Delete buttons for each food item
-                    edit_button = Button(
-                        text="Edit",
-                        size_hint_y=None,
-                        height=40
-                    )
-                    edit_button.bind(on_press=lambda instance, d=date, f=food: self.edit_food_entry(d, f))
+        #             # Add Edit and Delete buttons for each food item
+        #             edit_button = Button(
+        #                 text="Edit",
+        #                 size_hint_y=None,
+        #                 height=40
+        #             )
+        #             edit_button.bind(on_press=lambda instance, d=date, f=food: self.edit_food_entry(d, f))
 
-                    delete_button = Button(
-                        text="Delete (CAUTION)",
-                        size_hint_y=None,
-                        height=40,
-                        background_color=(1, 0, 0, 1)  # Red button
-                    )
-                    delete_button.bind(on_press=lambda instance, d=date, f=food: self.delete_food_entry(d, f))
+        #             delete_button = Button(
+        #                 text="Delete (CAUTION)",
+        #                 size_hint_y=None,
+        #                 height=40,
+        #                 background_color=(1, 0, 0, 1)  # Red button
+        #             )
+        #             delete_button.bind(on_press=lambda instance, d=date, f=food: self.delete_food_entry(d, f))
 
-                    button_layout = BoxLayout(size_hint_y=None, height=40)
-                    button_layout.add_widget(edit_button)
-                    button_layout.add_widget(delete_button)
+        #             button_layout = BoxLayout(size_hint_y=None, height=40)
+        #             button_layout.add_widget(edit_button)
+        #             button_layout.add_widget(delete_button)
 
-                    self.root.ids.log_layout.add_widget(button_layout)
+        #             self.root.ids.log_layout.add_widget(button_layout)
 
 
     
