@@ -51,10 +51,10 @@ class LogScreen(Screen):
         #Try this
         try:
             #Convert input text to float values (default to 0 if empty)
-            cals = float(self.root.ids.cals.text) if self.root.ids.cals.text else 0
-            carbs = float(self.root.ids.carbs.text) if self.root.ids.carbs.text else 0
-            fats = float(self.root.ids.fats.text) if self.root.ids.fats.text else 0
-            protein = float(self.root.ids.protein.text) if self.root.ids.protein.text else 0
+            cals = float(self.ids.cals.text) if self.ids.cals.text else 0
+            carbs = float(self.ids.carbs.text) if self.ids.carbs.text else 0
+            fats = float(self.ids.fats.text) if self.ids.fats.text else 0
+            protein = float(self.root.ids.protein.text) if self.ids.protein.text else 0
             food_name = self.root.ids.foodname.text.strip()
 
             #Ensures food name is provided
@@ -120,6 +120,81 @@ class LogScreen(Screen):
         except Exception as e:
             print(f"Error saving food log: {e}")
 
+
+    #LOAD FOOD LOG FUNCTION WAS HERE
+
+    #UDPATE DISPLAYED LOG FUNCTION WAS HERE
+
+    def edit_food_entry(self, date, food_name):
+        #Loads selected food entry into input fields for editing.
+        if date in self.food_log and food_name in self.food_log[date]:
+            entry = self.food_log[date][food_name]
+
+            # Prefill input fields with existing values
+            self.root.ids.foodname.text = food_name
+            self.root.ids.cals.text = str(entry["cals"])
+            self.root.ids.carbs.text = str(entry["carbs"])
+            self.root.ids.fats.text = str(entry["fats"])
+            self.root.ids.protein.text = str(entry["protein"])
+            self.root.ids.currentDate.text = date  # Set date to selected entry
+
+            # Temporary store the food being edited
+            self.editing_food = (date, food_name)
+            
+
+    def delete_food_entry(self, date, food_name):
+        # Removes a food entry and updates the UI.
+        if date in self.food_log and food_name in self.food_log[date]:
+            del self.food_log[date][food_name]
+
+            # Remove the date entry if empty
+            if not self.food_log[date]:
+                del self.food_log[date]
+
+            self.save_food_log()  # Save the updated log
+
+            # **Pass the current date to refresh the UI**
+            self.update_displayed_log(date)
+
+
+
+class GoalsScreen(Screen):
+    pass
+
+class WindowManager(ScreenManager):
+    pass
+
+class microMacros(MDApp):
+    
+    food_log = json.load(open("food_log.json", "r"))
+
+    #Initialize the counters
+    total_cals = 0
+    total_carbs = 0
+    total_fats = 0
+    total_protein = 0
+
+    today = datetime.today().strftime('%Y-%m-%d')
+    current_date = str(datetime.today().date())  
+
+    def build(self):
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Teal"
+
+        self.load_food_log()  # Load saved log on startup
+
+        sm = ScreenManager()
+        sm.add_widget(LogScreen(name="logscreen"))
+        sm.add_widget(GoalsScreen(name="goalscreen"))
+
+        build = Builder.load_file('microMacros.kv')
+
+        # Call update_displayed_log to show today's log at startup
+        self.update_displayed_log(self.current_date)
+
+        return build
+        # return self.window
+
     #Loads food_log.json into the scroll widget
     def load_food_log(self):
         try:
@@ -148,13 +223,16 @@ class LogScreen(Screen):
         except Exception as e:
             print(f"Error loading food log: {e}")
 
+
     #Updates displayed scroll food log in UI
     def update_displayed_log(self, date=None):
         print("reached")
         print(date)
         print(type(date))
         self.root.ids.log_layout.clear_widgets()  # Clear previous data
-        
+        print("Cleared widgets")
+
+
         if date:  # If a date is provided, show only that date’s 
             print("got to IF for loop")
 
@@ -300,76 +378,6 @@ class LogScreen(Screen):
                     button_layout.add_widget(delete_button)
 
                     self.root.ids.log_layout.add_widget(button_layout)
-
-    def edit_food_entry(self, date, food_name):
-        #Loads selected food entry into input fields for editing.
-        if date in self.food_log and food_name in self.food_log[date]:
-            entry = self.food_log[date][food_name]
-
-            # Prefill input fields with existing values
-            self.root.ids.foodname.text = food_name
-            self.root.ids.cals.text = str(entry["cals"])
-            self.root.ids.carbs.text = str(entry["carbs"])
-            self.root.ids.fats.text = str(entry["fats"])
-            self.root.ids.protein.text = str(entry["protein"])
-            self.root.ids.currentDate.text = date  # Set date to selected entry
-
-            # Temporary store the food being edited
-            self.editing_food = (date, food_name)
-            
-
-    def delete_food_entry(self, date, food_name):
-        # Removes a food entry and updates the UI.
-        if date in self.food_log and food_name in self.food_log[date]:
-            del self.food_log[date][food_name]
-
-            # Remove the date entry if empty
-            if not self.food_log[date]:
-                del self.food_log[date]
-
-            self.save_food_log()  # Save the updated log
-
-            # **Pass the current date to refresh the UI**
-            self.update_displayed_log(date)
-
-
-
-class GoalsScreen(Screen):
-    pass
-
-class WindowManager(ScreenManager):
-    pass
-
-class microMacros(MDApp):
-    
-    food_log = json.load(open("food_log.json", "r"))
-
-    #Initialize the counters
-    total_cals = 0
-    total_carbs = 0
-    total_fats = 0
-    total_protein = 0
-
-    today = datetime.today().strftime('%Y-%m-%d')
-    current_date = str(datetime.today().date())  
-
-    def build(self):
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Teal"
-
-        self.load_food_log()  # Load saved log on startup
-
-        sm = ScreenManager()
-        sm.add_widget(LogScreen(name="logscreen"))
-        sm.add_widget(GoalsScreen(name="goalscreen"))
-
-        build = Builder.load_file('microMacros.kv')
-
-        # Call update_displayed_log to show today's log at startup
-        self.update_displayed_log(self.current_date)
-
-        return build
-        # return self.window
 
 
     
