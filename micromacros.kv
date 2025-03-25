@@ -6,13 +6,13 @@ WindowManager:
 <SummaryScreen>:
     name: "SummaryScreen"
     BoxLayout:
+        id: summary_box_layout
         orientation: 'vertical'
         size: root.width, root.height
         Label:
             id: greetings
             text: "COMPARE TODAY AND GOALS"
             font_size: 32
-
 
         Label:
             id: currentDate
@@ -27,7 +27,6 @@ WindowManager:
             id: scroll_view
             size_hint: (1, None)
             size: (400, 300)
-
             BoxLayout:
                 id: log_layout
                 orientation: "vertical"
@@ -126,6 +125,7 @@ WindowManager:
             bold: True
             background_color: "00FFCE"
             on_release: 
+                root.save_food_log()
                 app.root.current = "SummaryScreen"
                 root.manager.transition.direction = "right"
 
