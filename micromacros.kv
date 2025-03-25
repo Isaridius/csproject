@@ -3,7 +3,64 @@ WindowManager:
     LogScreen
     GoalsScreen
 
+<SummaryScreen>:
+    name: "SummaryScreen"
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+        Label:
+            id: greetings
+            text: "COMPARE TODAY AND GOALS"
+            font_size: 32
 
+
+        Label:
+            id: currentDate
+            text: app.current_date
+            font_size: 32
+            color: "AAAAAA"
+
+        Label:
+            text: "Date's total food goes here"
+        
+        ScrollView:
+            id: scroll_view
+            size_hint: (1, None)
+            size: (400, 300)
+
+            BoxLayout:
+                id: log_layout
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height  # Makes the height dynamic
+
+
+        Button:
+            id: summary_calendar_btn
+            text: "Open Calendar"
+            on_press: root.show_date_picker(self)
+
+
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height
+
+            Button:
+                text: "Go to Goals Screen"
+                font_size: 32
+                on_release: 
+                    app.root.current = "goalsscreen"
+                    root.manager.transition.direction = "right"
+            
+            Button:
+                text: "Go to Log Screen"
+                font_size: 32
+                on_release: 
+                    app.root.current = "logscreen"
+                    root.manager.transition.direction = "left"
+
+            
 <LogScreen>:
     name: "logscreen"
     GridLayout:
@@ -21,7 +78,9 @@ WindowManager:
                 text: "Change Goals?"
                 font_size: 30
                 color: "AAAAAA"
-                on_press: app.root.current = "GoalsScreen"
+                on_press: 
+                    app.root.current = "goalsscreen"
+                    root.manager.transition.direction = "right"
 
 
         Label:
@@ -59,49 +118,36 @@ WindowManager:
             input_filter: "float"
             hint_text: "Enter protein (g)"
 
-        Button:
-            id: calendar_btn
-            text: "Open Calendar"
-            on_press: root.show_date_picker(self)
-
-        Label:
-            id: currentDate
-            text: app.today
-            font_size: 25
-            color: "AAAAAA"
+        #Calendar button and label was here
 
         Button:
             id: logbutton
             text: "LOG"
             bold: True
             background_color: "00FFCE"
-            on_press: root.display_nutrient_tally(self)
+            on_release: 
+                app.root.current = "SummaryScreen"
+                root.manager.transition.direction = "right"
 
-        ScrollView:
-            id: scroll_view
-            size_hint: (1, None)
-            size: (400, 300)
-
-            BoxLayout:
-                id: log_layout
-                orientation: "vertical"
-                size_hint_y: None
-                height: self.minimum_height
-                text: log_layout
-     
-
-
+        Button:
+            text: "Cancel"
+            font_size: 32
+            on_release: 
+                app.root.current = "SummaryScreen"
+                root.manager.transition.direction = "right"
 
 <GoalsScreen>:
     name: "goalsscreen"
     BoxLayout:
-        orientation: "vertical"
+        orientation: 'vertical'
+        size: root.width, root.height
         Label:
             text: "Set Your Goals"
+            font_size: 32
 
         Button:
-            text: "Back"
-            on_press: app.root.current = "LogScreen"
-
-
-
+            text: "Go to Summary Screen"
+            font_size: 32
+            on_release: 
+                app.root.current = "SummaryScreen"
+                root.manager.transition.direction = "left"
