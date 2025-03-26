@@ -33,13 +33,10 @@ WindowManager:
                 size_hint_y: None
                 height: self.minimum_height  # Makes the height dynamic
 
-
         Button:
             id: summary_calendar_btn
             text: "Open Calendar"
             on_press: root.show_date_picker(self)
-
-
 
         BoxLayout:
             orientation: 'horizontal'
@@ -80,7 +77,6 @@ WindowManager:
                 on_press: 
                     app.root.current = "goalsscreen"
                     root.manager.transition.direction = "right"
-
 
         Label:
             id: greeting

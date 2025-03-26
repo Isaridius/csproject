@@ -78,7 +78,6 @@ class LogScreen(Screen):
     #Saves self.food_log into a JSON file
     def save_food_log(self):
         mm= microMacros.get_running_app()
-        mm.food_log[mm.current_date][self.]
         try:
             with open("food_log.json", "w") as file:
                 json.dump(microMacros.get_running_app().food_log, file)
