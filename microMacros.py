@@ -1,5 +1,6 @@
 #Imports libaries
 import kivy
+from kivy.app import App
 from kivymd.app import MDApp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
@@ -23,6 +24,38 @@ Window.size = (target_width, target_height)
 # Window.fullscreen = 'auto'
 
 class SummaryScreen(Screen):
+    def nutrition_comparison(self):
+        print("Starting comparison...")
+        try:
+            with open('food_log.json', 'r') as file:
+                food_log = json.load(file)
+                total_cals = sum(food["cals"] for foods in food_log.values() for food in foods.values())
+                total_carbs = sum(food["carbs"] for foods in food_log.values() for food in foods.values())
+                total_fats = sum(food["fats"] for foods in food_log.values() for food in foods.values())
+                total_protein = sum(food["protein"] for foods in food_log.values() for food in foods.values())
+        except (FileNotFoundError, json.JSONDecodeError):
+            total_cals = 0  # Default value if the file doesn't exist or is empty
+            total_carbs = 0
+            total_fats = 0 
+            total_protein = 0
+
+        # Load nutrition_goals.json
+        try:
+            with open('nutrition_goals.json', 'r') as file:
+                goals_data = json.load(file)
+                calorie_goal = goals_data.get("calorie_goal", 0.0)
+                carb_goal = goals_data.get("carb_goal", 0.0)
+                fat_goal = goals_data.get("fat_goal", 0.0)
+                protein_goal = goals_data.get("protein_goal", 0.0)
+        except (FileNotFoundError, json.JSONDecodeError):
+            calorie_goal = 0.0  # Default value if the file doesn't exist or is empty
+            carb_goal = 0.0
+            fat_goal = 0.0
+            protein_goal = 0.0
+
+        # Update the label with the comparison data
+        self.ids.greetings.text = f"kcals: {total_cals}/{calorie_goal}kcal | carbs: {total_carbs}/{carb_goal}g | fats: {total_fats}/{fat_goal}g | protein: {total_protein}/{protein_goal}g"
+
     def refresh_summary(self):
         app = App.get_running_app()
 
@@ -71,10 +104,10 @@ class LogScreen(Screen):
         if mm.current_date not in fl:
             fl[mm.current_date] = {}
         fl[mm.current_date][self.ids.foodname.text] = { # cannot add 2 foods of the same name on the same day - dict error
-            "cals": float(self.ids.cals.text),
-            "carbs": float(self.ids.carbs.text),
-            "fats": float(self.ids.fats.text),
-            "protein": float(self.ids.protein.text)
+            "cals": float(self.ids.cals.text) if self.ids.cals.text else 0.0,
+            "carbs": float(self.ids.carbs.text) if self.ids.carbs.text else 0.0,
+            "fats": float(self.ids.fats.text) if self.ids.fats.text else 0.0,
+            "protein": float(self.ids.protein.text) if self.ids.protein.text else 0.0,
         }
         
         try:
@@ -85,6 +118,38 @@ class LogScreen(Screen):
         mm.update_displayed_log(mm.current_date)
 
 class GoalsScreen(Screen):
+    def save_goals(self):
+        app = App.get_running_app()
+
+        # Get input values as floats (or default to 0.0 if invalid)
+        try:
+            carb_goal = float(self.ids.carb_goal.text) if self.ids.carb_goal.text else 0.0
+            fat_goal = float(self.ids.fat_goal.text) if self.ids.fat_goal.text else 0.0
+            protein_goal = float(self.ids.protein_goal.text) if self.ids.protein_goal.text else 0.0
+            cal_goal = float(self.ids.calorie_goal.text) if self.ids.calorie_goal.text else 0.0
+        except ValueError:
+            # If conversion fails, set goals to 0.0
+            carb_goal, fat_goal, protein_goal, cal_goal = 0.0, 0.0, 0.0, 0.0
+            print("Invalid input, setting goals to 0.0. (What did you do dude???)")
+
+        # Create a dictionary to hold the goals
+        goals_data = {
+            "carb_goal": carb_goal,
+            "fat_goal": fat_goal,
+            "protein_goal": protein_goal,
+            "calorie_goal": cal_goal
+        }
+
+        # Write the dictionary to a JSON file
+        with open("nutrition_goals.json", "w") as f:
+            json.dump(goals_data, f)
+
+        # Confirmation or any further action (such as navigating back)
+        print("Goals saved successfully.")
+
+    def on_save_button_pressed(self):
+        """ Called when the 'Save Goals' button is pressed. """
+        self.save_goals()
     pass
 
 class WindowManager(ScreenManager):
@@ -397,6 +462,9 @@ class microMacros(MDApp):
     def on_start(self):
         # Call this after the UI is fully initialized
         self.update_displayed_log(self.current_date)
+        self.root.get_screen('SummaryScreen').nutrition_comparison()
+
+
 
     def change_goals(self, instance):
         return

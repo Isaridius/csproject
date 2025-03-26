@@ -5,46 +5,52 @@ WindowManager:
 
 <SummaryScreen>:
     name: "SummaryScreen"
+    on_enter: root.nutrition_comparison()
     BoxLayout:
         id: summary_box_layout
         orientation: 'vertical'
         size: root.width, root.height
+        # Greetings Label
         Label:
             id: greetings
             text: "COMPARE TODAY AND GOALS"
+            text_size: self.width, None
             font_size: 32
+            size_hint_y: 0.1
+            hieght: self.texture_size[1]
+            halign: "center"
+            valign: "middle"
 
-        Label:
-            id: currentDate
-            text: app.current_date
-            font_size: 32
-            color: "AAAAAA"
 
-        Label:
-            text: "Date's total food goes here"
+            on_enter:
+
         
+        # ScrollView taking most of the space
         ScrollView:
             id: scroll_view
-            size_hint: (1, None)
-            size: (400, 300)
+            size_hint: (1, 0.7)  # Adjusted to 70% of the vertical space
             BoxLayout:
                 id: log_layout
                 orientation: "vertical"
                 size_hint_y: None
-                height: self.minimum_height  # Makes the height dynamic
+                height: self.minimum_height  
 
+        # "Open Calendar" Button at the bottom of the screen
         Button:
             id: summary_calendar_btn
             text: "Open Calendar"
+            size_hint_y: 0.1  # This button takes up 10% of the height
             on_press: root.show_date_picker(self)
 
+        # Bottom BoxLayout for navigating to different screens
         BoxLayout:
             orientation: 'horizontal'
-            size: root.width, root.height
+            size_hint_y: 0.1  # Take up 10% of the screen height
 
             Button:
                 text: "Go to Goals Screen"
                 font_size: 32
+                size_hint_x: 0.5  # This button takes 50% of the width
                 on_release: 
                     app.root.current = "goalsscreen"
                     root.manager.transition.direction = "right"
@@ -52,10 +58,11 @@ WindowManager:
             Button:
                 text: "Go to Log Screen"
                 font_size: 32
+                size_hint_x: 0.5  # This button takes 50% of the width
                 on_release: 
                     app.root.current = "logscreen"
                     root.manager.transition.direction = "left"
-
+    
             
 <LogScreen>:
     name: "logscreen"
@@ -129,8 +136,41 @@ WindowManager:
     BoxLayout:
         orientation: 'vertical'
         size: root.width, root.height
+        
         Label:
             text: "Set Your Goals"
+            font_size: 32
+
+        TextInput:
+            id: calorie_goal
+            multiline: False
+            input_filter: "float"
+            hint_text: "Enter calorie goal"
+
+        TextInput:
+            id: carb_goal
+            multiline: False
+            input_filter: "float"
+            hint_text: "Enter carbohydrate goal (g)"
+
+        TextInput:
+            id: fat_goal
+            multiline: False
+            input_filter: "float"
+            hint_text: "Enter fat goal (g)"
+
+        TextInput:
+            id: protein_goal
+            multiline: False
+            input_filter: "float"
+            hint_text: "Enter protein goal (g)"
+
+        Button:
+            text: "Save Goals"
+            on_press: 
+                root.on_save_button_pressed()  # Trigger save action
+                app.root.current = "SummaryScreen"
+                root.manager.transition.direction = "left"
             font_size: 32
 
         Button:
