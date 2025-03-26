@@ -24,6 +24,13 @@ Window.size = (target_width, target_height)
 # Window.fullscreen = 'auto'
 
 class SummaryScreen(Screen):
+
+
+
+
+
+
+    
     def nutrition_comparison(self):
         print("Starting comparison...")
         try:
@@ -82,6 +89,8 @@ class SummaryScreen(Screen):
         self.ids.currentDate.text = mm.current_date
         mm.update_displayed_log(mm.current_date)
 
+        self.nutrition_comparison()
+
     #Either say canceled or just return to previous date
     def on_cancel(self, instance, value):
         # self.currentDate.text = "Canceled"
@@ -110,6 +119,12 @@ class LogScreen(Screen):
             "protein": float(self.ids.protein.text) if self.ids.protein.text else 0.0,
         }
         
+        self.ids.foodname.text = ""  
+        self.ids.cals.text = ""      
+        self.ids.carbs.text = ""     
+        self.ids.fats.text = ""      
+        self.ids.protein.text = ""   
+
         try:
             with open("food_log.json", "w") as file:
                 json.dump(microMacros.get_running_app().food_log, file)
@@ -179,70 +194,72 @@ class microMacros(MDApp):
 
         # Update the displayed log for today's date AFTER building the UI
         self.update_displayed_log(self.current_date)
+    
+    # #Displaying nutrition log in the scroll wheel. This is where a lot of stuff happens, and is the functionality of the LOG button
+    # def display_nutrient_tally(self, instance): #this might be deleted perhaps...
+    #     #Try this
+    #     try:
+    #         #Convert input text to float values (default to 0 if empty)
+    #         cals = float(self.ids.cals.text) if self.ids.cals.text else 0
+    #         carbs = float(self.ids.carbs.text) if self.ids.carbs.text else 0
+    #         fats = float(self.ids.fats.text) if self.ids.fats.text else 0
+    #         protein = float(self.root.ids.protein.text) if self.ids.protein.text else 0
+    #         food_name = self.root.ids.foodname.text.strip()
 
-        #Try this
-        try:
-            #Convert input text to float values (default to 0 if empty)
-            cals = float(self.ids.cals.text) if self.ids.cals.text else 0
-            carbs = float(self.ids.carbs.text) if self.ids.carbs.text else 0
-            fats = float(self.ids.fats.text) if self.ids.fats.text else 0
-            protein = float(self.root.ids.protein.text) if self.ids.protein.text else 0
-            food_name = self.root.ids.foodname.text.strip()
+    #         #Ensures food name is provided
+    #         if not food_name:
+    #             self.root.ids.greeting.text = "Food name cannot be empty!"
+    #             return
 
-            #Ensures food name is provided
-            if not food_name:
-                self.root.ids.greeting.text = "Food name cannot be empty!"
-                return
+    #         #gets selected or default date
+    #         current_date = self.root.ids.currentDate.text if self.root.ids.currentDate.text != "Remember to put the date" else str(datetime.today().date())
 
-            #gets selected or default date
-            current_date = self.root.ids.currentDate.text if self.root.ids.currentDate.text != "Remember to put the date" else str(datetime.today().date())
+    #         #Edits existing entry
+    #         if hasattr(self, "editing_food") and self.editing_food:
+    #             old_date, old_food_name = self.editing_food
 
-            #Edits existing entry
-            if hasattr(self, "editing_food") and self.editing_food:
-                old_date, old_food_name = self.editing_food
+    #             # Delete old entry if food name changed
+    #             if old_food_name != food_name and old_date in self.food_log and old_food_name in self.food_log[old_date]:
+    #                 del self.food_log[old_date][old_food_name]
 
-                # Delete old entry if food name changed
-                if old_food_name != food_name and old_date in self.food_log and old_food_name in self.food_log[old_date]:
-                    del self.food_log[old_date][old_food_name]
+    #             # Remove editing mode safely
+    #             del self.editing_food
+    #         else:
+    #             old_date, old_food_name = None, None  # Avoid using uninitialized variables
 
-                # Remove editing mode safely
-                del self.editing_food
-            else:
-                old_date, old_food_name = None, None  # Avoid using uninitialized variables
+    #         #Add entry to the food log
+    #         if current_date not in self.food_log:
+    #             self.food_log[current_date] = {}
 
-            #Add entry to the food log
-            if current_date not in self.food_log:
-                self.food_log[current_date] = {}
+    #         self.food_log[current_date][food_name] = {
+    #             "cals": cals,
+    #             "carbs": carbs,
+    #             "fats": fats,
+    #             "protein": protein
+    #         }
 
-            self.food_log[current_date][food_name] = {
-                "cals": cals,
-                "carbs": carbs,
-                "fats": fats,
-                "protein": protein
-            }
+    #         #Update total values
+    #         self.total_cals += cals
+    #         self.total_carbs += carbs
+    #         self.total_fats += fats
+    #         self.total_protein += protein
 
-            #Update total values
-            self.total_cals += cals
-            self.total_carbs += carbs
-            self.total_fats += fats
-            self.total_protein += protein
+    #         #Update UI with new totals in greeting text
+    #         self.root.ids.greeting.text = f"Cals: {self.total_cals}, Carbs: {self.total_carbs}, Fats: {self.total_fats}, Protein: {self.total_protein}"
 
-            #Update UI with new totals in greeting text
-            self.root.ids.greeting.text = f"Cals: {self.total_cals}, Carbs: {self.total_carbs}, Fats: {self.total_fats}, Protein: {self.total_protein}"
+    #         #Save log and update the display
+    #         self.save_food_log()
+    #         self.update_displayed_log(self.today)
 
-            #Save log and update the display
-            self.save_food_log()
-            self.update_displayed_log(self.today)
+    #         #Clear input fields
+    #         self.root.ids.foodname.text = ""
+    #         self.root.ids.cals.text = ""
+    #         self.root.ids.carbs.text = ""
+    #         self.root.ids.fats.text = ""
+    #         self.root.ids.protein.text = ""
 
-            #Clear input fields
-            self.root.ids.foodname.text = ""
-            self.root.ids.cals.text = ""
-            self.root.ids.carbs.text = ""
-            self.root.ids.fats.text = ""
-            self.root.ids.protein.text = ""
-
-        except Exception as e:
-            self.root.ids.greeting.text = "Invalid input, enter numbers only!"
+    #     except Exception as e:
+    #         self.root.ids.greeting.text = "Invalid input, enter numbers only!"
 
     def load_food_log(self):
         """
@@ -402,6 +419,7 @@ class microMacros(MDApp):
             # Buttons for Edit and Delete
             edit_button = Button(text="Edit", size_hint_y=None, height=40)
             edit_button.bind(on_press=lambda instance, d=date, f=food: self.edit_food_entry(d, f))
+            
 
             delete_button = Button(
                 text="Delete (CAUTION)",
@@ -419,11 +437,15 @@ class microMacros(MDApp):
 
     def edit_food_entry(self, date, food_name):
         #Loads selected food entry into input fields for editing.
+
         if date in self.food_log and food_name in self.food_log[date]:
             entry = self.food_log[date][food_name] # JSON object
             mm = microMacros.get_running_app()
             s =  self.root.get_screen("logscreen")
+
+            mm.root.transition = SlideTransition(direction='left')
             mm.root.current = "logscreen"
+
 
             # Prefill input fields with existing values
             print(s.ids)
@@ -462,6 +484,9 @@ class microMacros(MDApp):
         # Call this after the UI is fully initialized
         self.update_displayed_log(self.current_date)
         self.root.get_screen('SummaryScreen').nutrition_comparison()
+
+    def change_goals(self, instance):
+        return
 
 if __name__ == "__main__":
     microMacros().run()
