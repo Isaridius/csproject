@@ -179,8 +179,7 @@ class microMacros(MDApp):
 
         # Update the displayed log for today's date AFTER building the UI
         self.update_displayed_log(self.current_date)
-    #Displaying nutrition log in the scroll wheel. This is where a lot of stuff happens, and is the functionality of the LOG button
-    def display_nutrient_tally(self, instance): #this might be deleted perhaps...
+
         #Try this
         try:
             #Convert input text to float values (default to 0 if empty)
@@ -463,11 +462,6 @@ class microMacros(MDApp):
         # Call this after the UI is fully initialized
         self.update_displayed_log(self.current_date)
         self.root.get_screen('SummaryScreen').nutrition_comparison()
-
-
-
-    def change_goals(self, instance):
-        return
 
 if __name__ == "__main__":
     microMacros().run()

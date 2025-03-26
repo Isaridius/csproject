@@ -10,6 +10,7 @@ WindowManager:
         id: summary_box_layout
         orientation: 'vertical'
         size: root.width, root.height
+
         # Greetings Label
         Label:
             id: greetings
@@ -17,12 +18,23 @@ WindowManager:
             text_size: self.width, None
             font_size: 32
             size_hint_y: 0.1
-            hieght: self.texture_size[1]
+            height: self.texture_size[1]
+            halign: "center"
+            valign: "middle"
+
+        Label:
+            id: currentDate
+            text: app.current_date
+            font_Size: 32
+            colour: "00FFEE"
+            text_size: self.width, None
+            font_size: 32
+            size_hint_y: 0.1
+            height: self.texture_size[1]
             halign: "center"
             valign: "middle"
 
 
-            on_enter:
 
         
         # ScrollView taking most of the space
