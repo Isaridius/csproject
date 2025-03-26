@@ -217,21 +217,7 @@ class microMacros(MDApp):
             print(f"Error loading food log: {e}")
 
     def update_displayed_log(self, date=None):
-        """
-        Clears and updates the log layout with food entries.
-        If a date is provided, it displays food entries for that date; otherwise, it shows all dates.
-        """
-        # print("Updating displayed log...")
-        # print("Root widget:", self.root)
-        # print("Root ids:", self.root.ids)
-
         try:
-            # print("Attempting self.root.ids.log_layout.clear_widgets()")
-            # print(self)
-            # print(self.root)
-            # print(type(self.root))
-            # print(self.root.get_screen("SummaryScreen"))
-
             print(self)
             print(self.root)
             print(self.root.get_screen("SummaryScreen"))
@@ -240,19 +226,9 @@ class microMacros(MDApp):
             s =  self.root.get_screen("SummaryScreen")
             ll = s.ids.log_layout
             ll.clear_widgets()
-        # self.root.get_screen("SummaryScreen").ids.summary_box_layout.ids.scroll_view.ids.log_layout.clear_widgets()
 
-            # print(self.root.screens.SummaryScreen)
-            # print(type(self.root.screens.SummaryScreen))
-            # self.root.SummaryScreen.ids.summary_box_layout.ids.scroll_view.ids.log_layout.clear_widgets()
-            # self.root.ids.log_layout.clear_widgets()  # Clear previous data
         except Exception:
             print(Exception)
-            # print("Trying brute force")
-            # summary_screen = self.root.get_screen("SummaryScreen")
-            # log_layout = summary_screen.ids.log_layout
-            # print("log_layout:", log_layout)  # Verify it exists
-            # log_layout.clear_widgets()
     
         print("Cleared previous data")
 
