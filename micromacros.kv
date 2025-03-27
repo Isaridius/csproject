@@ -25,52 +25,49 @@ WindowManager:
         Label:
             id: currentDate
             text: app.current_date
-            font_Size: 32
-            colour: "00FFEE"
+            colour: "FFFFFF"
             text_size: self.width, None
             font_size: 32
             size_hint_y: 0.1
             height: self.texture_size[1]
             halign: "center"
             valign: "middle"
-
-
-
         
-        # ScrollView taking most of the space
         ScrollView:
             id: scroll_view
-            size_hint: (1, 0.7)  # Adjusted to 70% of the vertical space
+            size_hint: (1, 0.7)  
             BoxLayout:
                 id: log_layout
                 orientation: "vertical"
                 size_hint_y: None
                 height: self.minimum_height  
 
-        # "Open Calendar" Button at the bottom of the screen
         Button:
             id: summary_calendar_btn
             text: "Open Calendar"
-            size_hint_y: 0.1  # This button takes up 10% of the height
+            size_hint_y: 0.1  
             on_press: root.show_date_picker(self)
 
-        # Bottom BoxLayout for navigating to different screens
         BoxLayout:
             orientation: 'horizontal'
-            size_hint_y: 0.1  # Take up 10% of the screen height
+            size_hint_y: 0.1  
 
             Button:
-                text: "Go to Goals Screen"
+                text: "Set Goals"
                 font_size: 32
-                size_hint_x: 0.5  # This button takes 50% of the width
+                size_hint_x: 0.5
+                bold: True
+                background_color: "0b5394"
                 on_release: 
                     app.root.current = "goalsscreen"
                     root.manager.transition.direction = "right"
             
             Button:
-                text: "Go to Log Screen"
+                text: "Log Food"
                 font_size: 32
-                size_hint_x: 0.5  # This button takes 50% of the width
+                size_hint_x: 0.5 
+                bold: True
+                background_color: "00FFCE"
                 on_release: 
                     app.root.current = "logscreen"
                     root.manager.transition.direction = "left"
@@ -179,6 +176,8 @@ WindowManager:
 
         Button:
             text: "Save Goals"
+            bold: True
+            background_color: "0b5394"
             on_press: 
                 root.on_save_button_pressed()  # Trigger save action
                 app.root.current = "SummaryScreen"
