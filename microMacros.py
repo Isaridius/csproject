@@ -110,10 +110,10 @@ class LogScreen(Screen):
 
         food_name = self.ids.foodname.text
         try:
-            calories = float(self.ids.cals.text) if self.ids.cals.text else 0.0
-            carbs = float(self.ids.carbs.text) if self.ids.carbs.text else 0.0
-            fats = float(self.ids.fats.text) if self.ids.fats.text else 0.0
-            protein = float(self.ids.protein.text) if self.ids.protein.text else 0.0
+            calories = int(self.ids.cals.text) if self.ids.cals.text else 0.0
+            carbs = int(self.ids.carbs.text) if self.ids.carbs.text else 0.0
+            fats = int(self.ids.fats.text) if self.ids.fats.text else 0.0
+            protein = int(self.ids.protein.text) if self.ids.protein.text else 0.0
 
             macronutrients = [calories, carbs, fats, protein]
             if any(value < 0 for value in macronutrients):

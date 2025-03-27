@@ -16,7 +16,6 @@ WindowManager:
             id: greetings
             text: "COMPARE TODAY AND GOALS"
             text_size: self.width, None
-            font_size: 32
             size_hint_y: 0.1
             height: self.texture_size[1]
             halign: "center"
@@ -27,7 +26,6 @@ WindowManager:
             text: app.current_date
             colour: "FFFFFF"
             text_size: self.width, None
-            font_size: 32
             size_hint_y: 0.1
             height: self.texture_size[1]
             halign: "center"
@@ -54,7 +52,6 @@ WindowManager:
 
             Button:
                 text: "Set Goals"
-                font_size: 32
                 size_hint_x: 0.5
                 bold: True
                 background_color: "0b5394"
@@ -64,7 +61,6 @@ WindowManager:
             
             Button:
                 text: "Log Food"
-                font_size: 32
                 size_hint_x: 0.5 
                 bold: True
                 background_color: "00FFCE"
@@ -80,16 +76,9 @@ WindowManager:
         cols: 1
         pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
-        GridLayout:
-            id: logo_goals
-            cols: 2
-            Image:
-                source: "logo.png"
-
         Label:
             id: greeting
             text: "Insert data for this session"
-            font_size: 30
             color: "AAAAAA"
 
         TextInput:
@@ -133,7 +122,6 @@ WindowManager:
 
         Button:
             text: "Cancel"
-            font_size: 32
             background_color: (1, 0, 0, 1)
             on_release: 
                 app.root.current = "SummaryScreen"
@@ -147,7 +135,6 @@ WindowManager:
         
         Label:
             text: "Set Your Goals"
-            font_size: 32
 
         TextInput:
             id: calorie_goal
@@ -181,11 +168,9 @@ WindowManager:
                 root.on_save_button_pressed()  # Trigger save action
                 app.root.current = "SummaryScreen"
                 root.manager.transition.direction = "left"
-            font_size: 32
 
         Button:
             text: "Cancel"
-            font_size: 32
             background_color: (1, 0, 0, 1)
             on_release: 
                 app.root.current = "SummaryScreen"
