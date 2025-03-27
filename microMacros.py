@@ -17,11 +17,11 @@ from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.clock import Clock
 
-# iPhone 15 Pro Max aspect ratio (19.5:9)
-target_height = 900  # Adjust as needed
+target_height = Window.height  # Adjust as needed
 target_width = int(target_height * (9 / 19.5))
 Window.size = (target_width, target_height)
-# Window.fullscreen = 'auto'
+
+# Window.fullscreen = 'manual'
 
 class SummaryScreen(Screen):
     def nutrition_comparison(self):
@@ -63,7 +63,7 @@ class SummaryScreen(Screen):
         self.ids.greetings.markup = True
 
         def get_colored_text(total, goal):
-            return f"[color=#0000FF]{total}[/color]" if total <= goal else f"[color=#FF0000]{total}[/color]"
+            return f"[color=#AAAAFF]{total}[/color]" if total <= goal else f"[color=#FF4444]{total}[/color]"
 
         self.ids.greetings.text = f'''
         kcals: {get_colored_text(total_cals, calorie_goal)}/{calorie_goal}kcal
@@ -103,10 +103,10 @@ class LogScreen(Screen):
         if mm.current_date not in fl:
             fl[mm.current_date] = {}
         fl[mm.current_date][self.ids.foodname.text] = { # cannot add 2 foods of the same name on the same day - dict error
-            "cals": int(self.ids.cals.text) if self.ids.cals.text else 0.0,
-            "carbs": int(self.ids.carbs.text) if self.ids.carbs.text else 0.0,
-            "fats": int(self.ids.fats.text) if self.ids.fats.text else 0.0,
-            "protein": int(self.ids.protein.text) if self.ids.protein.text else 0.0,
+            "cals": float(self.ids.cals.text) if self.ids.cals.text else 0,
+            "carbs": float(self.ids.carbs.text) if self.ids.carbs.text else 0,
+            "fats": float(self.ids.fats.text) if self.ids.fats.text else 0,
+            "protein": float(self.ids.protein.text) if self.ids.protein.text else 0,
         }
         
         self.ids.foodname.text = ""  
@@ -145,10 +145,10 @@ class GoalsScreen(Screen):
         app = App.get_running_app()
         
         try:
-            carb_goal = int(self.ids.carb_goal.text) if self.ids.carb_goal.text else 0.0
-            fat_goal = int(self.ids.fat_goal.text) if self.ids.fat_goal.text else 0.0
-            protein_goal = int(self.ids.protein_goal.text) if self.ids.protein_goal.text else 0.0
-            cal_goal = int(self.ids.calorie_goal.text) if self.ids.calorie_goal.text else 0.0
+            carb_goal = float(self.ids.carb_goal.text) if self.ids.carb_goal.text else 0.0
+            fat_goal = float(self.ids.fat_goal.text) if self.ids.fat_goal.text else 0.0
+            protein_goal = float(self.ids.protein_goal.text) if self.ids.protein_goal.text else 0.0
+            cal_goal = float(self.ids.calorie_goal.text) if self.ids.calorie_goal.text else 0.0
         except ValueError:
             carb_goal = 0
             fat_goal = 0
@@ -356,9 +356,6 @@ class microMacros(MDApp):
         # Call this after the UI is fully initialized
         self.update_displayed_log(self.current_date)
         self.root.get_screen('SummaryScreen').nutrition_comparison()
-
-    def change_goals(self, instance):
-        return
 
 if __name__ == "__main__":
     microMacros().run()

@@ -1,10 +1,1 @@
-{
-    "2025-03-27": {
-        "Uranium": {
-            "cals": 123,
-            "carbs": 123,
-            "fats": 123,
-            "protein": 123
-        }
-    }
-}
+{"2025-03-27": {"Clementine": {"cals": 35.0, "carbs": 8.9, "fats": 0.2, "protein": 0.6}, "Chicken and Potatoes": {"cals": 400.0, "carbs": 40.0, "fats": 20.0, "protein": 40.0}}}
