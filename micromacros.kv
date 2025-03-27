@@ -130,12 +130,11 @@ WindowManager:
             background_color: "00FFCE"
             on_release: 
                 root.save_food_log()
-                app.root.current = "SummaryScreen"
-                root.manager.transition.direction = "right"
 
         Button:
             text: "Cancel"
             font_size: 32
+            background_color: (1, 0, 0, 1)
             on_release: 
                 app.root.current = "SummaryScreen"
                 root.manager.transition.direction = "right"
@@ -185,8 +184,9 @@ WindowManager:
             font_size: 32
 
         Button:
-            text: "Go to Summary Screen"
+            text: "Cancel"
             font_size: 32
+            background_color: (1, 0, 0, 1)
             on_release: 
                 app.root.current = "SummaryScreen"
                 root.manager.transition.direction = "left"

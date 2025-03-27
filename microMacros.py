@@ -28,49 +28,52 @@ class SummaryScreen(Screen):
         mm = microMacros.get_running_app()
         cd = mm.current_date
         print("Starting comparison...")
+        
+        # Initialize total values to 0
+        total_cals = total_carbs = total_fats = total_protein = 0
+
         try:
+            # Read the food_log from the JSON file
             with open('food_log.json', 'r') as file:
                 food_log = json.load(file)
-                total_cals = sum(food["cals"] for food in food_log[cd].values())
-                total_carbs = sum(food["carbs"] for food in food_log[cd].values())
-                total_fats = sum(food["fats"] for food in food_log[cd].values())
-                total_protein = sum(food["protein"] for food in food_log[cd].values())
-        except (FileNotFoundError, json.JSONDecodeError):
-            total_cals = 0  # Default value if the file doesn't exist or is empty
-            total_carbs = 0
-            total_fats = 0 
-            total_protein = 0
-        except Exception:
-            total_cals = 0  # Default value if the file doesn't exist or is empty
-            total_carbs = 0
-            total_fats = 0 
-            total_protein = 0
 
+                # Ensure the current date exists in the food log
+                if cd in food_log:
+                    # Sum up the values for the current date
+                    for food in food_log[cd]:
+                        total_cals += food.get("cals", 0)
+                        total_carbs += food.get("carbs", 0)
+                        total_fats += food.get("fats", 0)
+                        total_protein += food.get("protein", 0)
+
+        except (FileNotFoundError, json.JSONDecodeError):
+            print("Food log file is missing or invalid.")
+        
         # Load nutrition_goals.json
         try:
             with open('nutrition_goals.json', 'r') as file:
                 goals_data = json.load(file)
-                calorie_goal = goals_data.get("calorie_goal", 0.0)
-                carb_goal = goals_data.get("carb_goal", 0.0)
-                fat_goal = goals_data.get("fat_goal", 0.0)
-                protein_goal = goals_data.get("protein_goal", 0.0)
+                calorie_goal = goals_data.get("calorie_goal", 0)
+                carb_goal = goals_data.get("carb_goal", 0)
+                fat_goal = goals_data.get("fat_goal", 0)
+                protein_goal = goals_data.get("protein_goal", 0)
         except (FileNotFoundError, json.JSONDecodeError):
-            calorie_goal = 0.0  # Default value if the file doesn't exist or is empty
-            carb_goal = 0.0
-            fat_goal = 0.0
-            protein_goal = 0.0
-
+            calorie_goal = carb_goal = fat_goal = protein_goal = 0
+            # i was lazy
+        
         self.ids.greetings.markup = True
 
+        # Function to return colored text based on comparison
         def get_colored_text(total, goal):
             return f"[color=#AAAAFF]{total}[/color]" if total <= goal else f"[color=#FF4444]{total}[/color]"
 
+        # Set the greetings text with comparison
         self.ids.greetings.text = f'''
         kcals: {get_colored_text(total_cals, calorie_goal)}/{calorie_goal}kcal
         carbs: {get_colored_text(total_carbs, carb_goal)}/{carb_goal}g
         fats: {get_colored_text(total_fats, fat_goal)}/{fat_goal}g
         protein: {get_colored_text(total_protein, protein_goal)}/{protein_goal}g
-        ''' 
+        '''
 
     #Save the date
     def on_save(self, instance, value, date_range):
@@ -98,29 +101,80 @@ class SummaryScreen(Screen):
 class LogScreen(Screen):
     #Saves self.food_log into a JSON file
     def save_food_log(self):
-        mm= microMacros.get_running_app()
+        mm = microMacros.get_running_app()
         fl = mm.food_log
-        if mm.current_date not in fl:
-            fl[mm.current_date] = {}
-        fl[mm.current_date][self.ids.foodname.text] = { # cannot add 2 foods of the same name on the same day - dict error
-            "cals": float(self.ids.cals.text) if self.ids.cals.text else 0,
-            "carbs": float(self.ids.carbs.text) if self.ids.carbs.text else 0,
-            "fats": float(self.ids.fats.text) if self.ids.fats.text else 0,
-            "protein": float(self.ids.protein.text) if self.ids.protein.text else 0,
-        }
-        
-        self.ids.foodname.text = ""  
-        self.ids.cals.text = ""      
-        self.ids.carbs.text = ""     
-        self.ids.fats.text = ""      
-        self.ids.protein.text = ""   
 
+        # Initialize list for current date if not present
+        if mm.current_date not in fl:
+            fl[mm.current_date] = []
+
+        food_name = self.ids.foodname.text
         try:
-            with open("food_log.json", "w") as file:
-                json.dump(microMacros.get_running_app().food_log, file)
-        except Exception as e:
-            print(f"Error saving food log: {e}")
-        mm.update_displayed_log(mm.current_date)
+            calories = float(self.ids.cals.text) if self.ids.cals.text else 0.0
+            carbs = float(self.ids.carbs.text) if self.ids.carbs.text else 0.0
+            fats = float(self.ids.fats.text) if self.ids.fats.text else 0.0
+            protein = float(self.ids.protein.text) if self.ids.protein.text else 0.0
+
+            macronutrients = [calories, carbs, fats, protein]
+            if any(value < 0 for value in macronutrients):
+                print("Negative values are not allowed.")
+                return
+        except ValueError:
+            print("Invalid input for macronutrients. Please enter valid numbers.")
+            return
+
+        if food_name:
+            # Check if we're editing an existing food entry
+            if hasattr(self, 'editing_food'):
+                date, old_food_name = self.editing_food
+                food_list = fl.get(date, [])
+
+                for entry in food_list:
+                    if entry["food_id"] == old_food_name:
+                        entry["food_id"] = food_name  # Allow renaming
+                        entry["cals"] = calories
+                        entry["carbs"] = carbs
+                        entry["fats"] = fats
+                        entry["protein"] = protein
+                        break  # Stop once edited
+                
+                # If the date changed, move entry
+                if date != mm.current_date:
+                    fl[mm.current_date].append(entry)
+                    food_list.remove(entry)
+
+                del self.editing_food  # Remove editing state
+            else:
+                # Create a new food entry if we're not editing
+                food_entry = {
+                    "food_id": food_name,
+                    "cals": calories,
+                    "carbs": carbs,
+                    "fats": fats,
+                    "protein": protein
+                }
+                fl[mm.current_date].append(food_entry)
+
+            # Clear input fields
+            self.ids.foodname.text = ""
+            self.ids.cals.text = ""
+            self.ids.carbs.text = ""
+            self.ids.fats.text = ""
+            self.ids.protein.text = ""
+
+            # Save updated food log
+            try:
+                with open("food_log.json", "w") as file:
+                    json.dump(mm.food_log, file)
+            except Exception as e:
+                print(f"Error saving food log: {e}")
+
+            mm.update_displayed_log(mm.current_date)
+
+            # Navigate back
+            app = microMacros.get_running_app()
+            app.root.current = "SummaryScreen"
+            self.manager.transition.direction = "right"
 
 class GoalsScreen(Screen):
     def on_enter(self):
@@ -145,10 +199,10 @@ class GoalsScreen(Screen):
         app = App.get_running_app()
         
         try:
-            carb_goal = float(self.ids.carb_goal.text) if self.ids.carb_goal.text else 0.0
-            fat_goal = float(self.ids.fat_goal.text) if self.ids.fat_goal.text else 0.0
-            protein_goal = float(self.ids.protein_goal.text) if self.ids.protein_goal.text else 0.0
-            cal_goal = float(self.ids.calorie_goal.text) if self.ids.calorie_goal.text else 0.0
+            carb_goal = int(self.ids.carb_goal.text) if self.ids.carb_goal.text else 0
+            fat_goal = int(self.ids.fat_goal.text) if self.ids.fat_goal.text else 0
+            protein_goal = int(self.ids.protein_goal.text) if self.ids.protein_goal.text else 0
+            cal_goal = int(self.ids.calorie_goal.text) if self.ids.calorie_goal.text else 0
         except ValueError:
             carb_goal = 0
             fat_goal = 0
@@ -190,9 +244,7 @@ class microMacros(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Teal"
-
-        self.load_food_log()  # Load saved log on startup
-        
+        self.load_food_log()  # Load saved log on startup        
         # Load .kv file (which defines the WindowManager and all screens)
         build = Builder.load_file('microMacros.kv')
 
@@ -282,10 +334,11 @@ class microMacros(MDApp):
         ll.add_widget(Label(size_hint_y=None, height=10))  # Spacer
 
     def _add_food_entries(self, date, foods):
-        for food, details in foods.items():
-            # Food name and macronutrient info
+        for entry in foods:  # Loop directly over the list of food entries
+            # Assuming each `entry` is a dictionary with 'food_id', 'cals', etc.
+            food_name = entry['food_id']
             food_label = Label(
-                text=f"{food}: {details['cals']} kcal",
+                text=f"{food_name}: {entry['cals']} kcal",
                 size_hint_y=None,
                 height=40,
             )
@@ -294,7 +347,7 @@ class microMacros(MDApp):
             ll.add_widget(food_label)
 
             nutrients_label = Label(
-                text=f"Carbs: {details['carbs']}g | Fats: {details['fats']}g | Protein: {details['protein']}g",
+                text=f"Carbs: {entry['carbs']}g | Fats: {entry['fats']}g | Protein: {entry['protein']}g",
                 size_hint_y=None,
                 height=40
             )
@@ -302,8 +355,7 @@ class microMacros(MDApp):
 
             # Buttons for Edit and Delete
             edit_button = Button(text="Edit", size_hint_x = 0.75, size_hint_y=None, height=40)
-            edit_button.bind(on_press=lambda instance, d=date, f=food: self.edit_food_entry(d, f))
-            
+            edit_button.bind(on_press=lambda instance, d=date, f=food_name: self.edit_food_entry(d, f))
 
             delete_button = Button(
                 text="Delete",
@@ -312,45 +364,63 @@ class microMacros(MDApp):
                 height=40,
                 background_color=(1, 0, 0, 1)
             )
-            delete_button.bind(on_press=lambda instance, d=date, f=food: self.delete_food_entry(d, f))
+            delete_button.bind(on_press=lambda instance, d=date, f=food_name: self.delete_food_entry(d, f))
 
             button_layout = BoxLayout(size_hint_y=None, height=40)
             button_layout.add_widget(edit_button)
             button_layout.add_widget(delete_button)
             ll.add_widget(button_layout)
 
+
     def edit_food_entry(self, date, food_name):
-        #Loads selected food entry into input fields for editing.
+        # Find the food entry in the list for the given date
+        food_list = self.food_log.get(date, [])
+        for food_entry in food_list:
+            if food_entry["food_id"] == food_name:
+                entry = food_entry
+                break
+        else:
+            return  # Exit if food not found
 
-        if date in self.food_log and food_name in self.food_log[date]:
-            entry = self.food_log[date][food_name] # JSON object
-            mm = microMacros.get_running_app()
-            s =  self.root.get_screen("logscreen")
+        s = self.root.get_screen("logscreen")
 
-            mm.root.transition = SlideTransition(direction='left')
-            mm.root.current = "logscreen"
+        self.root.transition = SlideTransition(direction='left')
+        self.root.current = "logscreen"
+
+        # Prefill input fields with existing values
+        s.ids.foodname.text = food_name
+        s.ids.cals.text = str(entry["cals"])
+        s.ids.carbs.text = str(entry["carbs"])
+        s.ids.fats.text = str(entry["fats"])
+        s.ids.protein.text = str(entry["protein"])
+
+        # Store editing state in LogScreen instead
+        s.editing_food = (date, food_name)  
+        app = microMacros.get_running_app()
+        app.root.get_screen("SummaryScreen").nutrition_comparison()
 
 
-            # Prefill input fields with existing values
-            print(s.ids)
-
-            s.ids.foodname.text = food_name
-            s.ids.cals.text = str(entry["cals"])
-            s.ids.carbs.text = str(entry["carbs"])
-            s.ids.fats.text = str(entry["fats"])
-            s.ids.protein.text = str(entry["protein"])
-
-            # Temporary store the food being edited
-            self.editing_food = (date, food_name)
 
     def delete_food_entry(self, date, food_name):
-        del self.food_log[date][food_name]
-        json.dump(self.food_log,open('food_log.json','w'))
-        self.update_displayed_log(date)
+        food_list = self.food_log.get(date, [])
         
-        mm = microMacros.get_running_app()
-        ss = mm.root.get_screen("SummaryScreen")
-        ss.nutrition_comparison()
+        # Find and remove the food entry from the list
+        food_list = [entry for entry in food_list if entry["food_id"] != food_name]
+        
+        # Update the food log with the new list
+        self.food_log[date] = food_list
+
+        # Save the updated food log to the JSON file
+        try:
+            with open("food_log.json", "w") as file:
+                json.dump(self.food_log, file)
+        except Exception as e:
+            print(f"Error saving food log: {e}")
+
+        # Update the display
+        self.update_displayed_log(date)
+        app = microMacros.get_running_app()
+        app.root.get_screen("SummaryScreen").nutrition_comparison()
 
     def on_start(self):
         # Call this after the UI is fully initialized

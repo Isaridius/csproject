@@ -1,1 +1,34 @@
-{"2025-03-27": {"Clementine": {"cals": 35.0, "carbs": 8.9, "fats": 0.2, "protein": 0.6}, "Chicken and Potatoes": {"cals": 400.0, "carbs": 40.0, "fats": 20.0, "protein": 40.0}}}
+{
+    "2025-03-27": [
+        {
+            "food_id": "Burrito",
+            "cals": 1000.0,
+            "carbs": 300.0,
+            "fats": 40.0,
+            "protein": 80.0
+        },
+        {
+            "food_id": "Chicken thigh ",
+            "cals": 380.0,
+            "carbs": 0.0,
+            "fats": 25.0,
+            "protein": 50.0
+        },
+        {
+            "food_id": "Potato",
+            "cals": 300.0,
+            "carbs": 40.0,
+            "fats": 5.0,
+            "protein": 5.0
+        }
+    ],
+    "2025-03-26": [
+        {
+            "food_id": "Buwer",
+            "cals": 123.0,
+            "carbs": 0.0,
+            "fats": 0.0,
+            "protein": 0.0
+        }
+    ]
+}
