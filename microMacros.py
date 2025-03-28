@@ -21,7 +21,7 @@ target_height = Window.height  # Adjust as needed
 target_width = int(target_height * (9 / 19.5))
 Window.size = (target_width, target_height)
 
-# Window.fullscreen = 'manual'
+Window.fullscreen = 'auto'
 
 class SummaryScreen(Screen):
     def nutrition_comparison(self):
@@ -222,9 +222,6 @@ class GoalsScreen(Screen):
 
         print("Goals saved successfully.")
 
-    def on_save_button_pressed(self):
-        self.save_goals()
-
 class WindowManager(ScreenManager):
     pass
 
@@ -244,44 +241,12 @@ class microMacros(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Teal"
-        self.load_food_log()  # Load saved log on startup        
+        # self.load_food_log()  # Load saved log on startup        
         # Load .kv file (which defines the WindowManager and all screens)
         build = Builder.load_file('microMacros.kv')
 
         # Update the displayed log for today's date AFTER building the UI
         self.update_displayed_log(self.current_date)
-    
-    def load_food_log(self):
-        try:
-            with open("food_log.json", "r") as file:
-                self.food_log = json.load(file)
-
-            # Initialize totals
-            self.total_cals = 0
-            self.total_carbs = 0
-            self.total_fats = 0
-            self.total_protein = 0
-
-            # Tally up totals from the JSON
-            for date, foods in self.food_log.items():
-                for food_details in foods.values():
-                    self.total_cals += food_details["cals"]
-                    self.total_carbs += food_details["carbs"]
-                    self.total_fats += food_details["fats"]
-                    self.total_protein += food_details["protein"]
-
-            # Update the greeting label in the UI
-            self.root.ids.greeting.text = (
-                f"(Cals: {self.total_cals}, Carbs: {self.total_carbs}, "
-                f"Fats: {self.total_fats}, Protein: {self.total_protein})"
-            )
-            print("Food log loaded successfully!")
-
-        except FileNotFoundError:
-            print("No food log found. Initializing an empty log.")
-            self.food_log = {}
-        except Exception as e:
-            print(f"Error loading food log: {e}")
 
     def update_displayed_log(self, date=None):
         try:
@@ -310,28 +275,7 @@ class microMacros(MDApp):
                 self._add_food_entries(date, foods)
         else:  # Show data for all dates
             for log_date, foods in sorted(self.food_log.items(), reverse=True):
-                self._add_date_header(log_date)
-                self._add_daily_summary(foods)
                 self._add_food_entries(log_date, foods)
-
-    def _add_daily_summary(self, foods):
-        total_cals = sum(food["cals"] for food in foods.values())
-        total_carbs = sum(food["carbs"] for food in foods.values())
-        total_fats = sum(food["fats"] for food in foods.values())
-        total_protein = sum(food["protein"] for food in foods.values())
-
-        total_label = Label(
-            text=(
-                f"[b]Total:[/b] {total_cals} kcal | [b]Carbs:[/b] {total_carbs}g | "
-                f"[b]Fats:[/b] {total_fats}g | [b]Protein:[/b] {total_protein}g"
-            ),
-            markup=True,
-            size_hint_y=None,
-            height=50
-        )
-        s = self.root.get_screen("SummaryScreen")
-        ll = s.ids.log_layout
-        ll.add_widget(Label(size_hint_y=None, height=10))  # Spacer
 
     def _add_food_entries(self, date, foods):
         for entry in foods:  # Loop directly over the list of food entries
@@ -371,7 +315,6 @@ class microMacros(MDApp):
             button_layout.add_widget(delete_button)
             ll.add_widget(button_layout)
 
-
     def edit_food_entry(self, date, food_name):
         # Find the food entry in the list for the given date
         food_list = self.food_log.get(date, [])
@@ -398,8 +341,6 @@ class microMacros(MDApp):
         s.editing_food = (date, food_name)  
         app = microMacros.get_running_app()
         app.root.get_screen("SummaryScreen").nutrition_comparison()
-
-
 
     def delete_food_entry(self, date, food_name):
         food_list = self.food_log.get(date, [])

@@ -1,1 +1,6 @@
-{"carb_goal": 300, "fat_goal": 60, "protein_goal": 180, "calorie_goal": 2420}
+{
+    "carb_goal": 300,
+    "fat_goal": 60,
+    "protein_goal": 180,
+    "calorie_goal": 2500
+}

@@ -1,1 +1,48 @@
-{"2025-03-27": [{"food_id": "Burrito", "cals": 1000, "carbs": 300, "fats": 40, "protein": 80}, {"food_id": "Chicken thigh ", "cals": 380, "carbs": 0, "fats": 25, "protein": 50}], "2025-03-26": [{"food_id": "Burger", "cals": 123, "carbs": 0, "fats": 0, "protein": 0}]}
+{
+    "2025-03-27": [
+        {
+            "food_id": "2 Chicken Thigh and 12 oz potato",
+            "cals": 600,
+            "carbs": 40,
+            "fats": 30,
+            "protein": 65
+        },
+        {
+            "food_id": "Muscle Milk Protein",
+            "cals": 160,
+            "carbs": 9,
+            "fats": 5,
+            "protein": 25
+        },
+        {
+            "food_id": "Juice",
+            "cals": 36,
+            "carbs": 9,
+            "fats": 0,
+            "protein": 0
+        },
+        {
+            "food_id": "Burrito",
+            "cals": 1500,
+            "carbs": 240,
+            "fats": 40,
+            "protein": 80
+        },
+        {
+            "food_id": "More Juice",
+            "cals": 36,
+            "carbs": 9,
+            "fats": 0.0,
+            "protein": 0.0
+        }
+    ],
+    "2025-03-26": [
+        {
+            "food_id": "Burger",
+            "cals": 123,
+            "carbs": 0,
+            "fats": 0,
+            "protein": 0
+        }
+    ]
+}
